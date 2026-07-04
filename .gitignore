@@ -1,0 +1,10 @@
+# Dependencies (installed for the smoke test: npm i jsdom)
+node_modules/
+
+# npm
+package-lock.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
