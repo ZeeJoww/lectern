@@ -4,9 +4,28 @@ A slide system for academic talks that is **one HTML file**. No build step, no s
 
 The deck you have *is* the documentation: its 15 slides demonstrate every component, with usage snippets.
 
-## Quick start
+## Write your talk — the fast path
 
-1. Open `lectern.html` — it runs from a double-click (`file://`) or any static host.
+Open **`compose.html`**, replace the sample with your own text, click **Download deck**. You only decide what to say on each slide:
+
+```
+title: Your Talk Title
+authors: F. Lastname (Institute)
+venue: Seminar · Month 2026
+
+# First Section
+## A claim stated as a sentence
+The lead line the room reads first.
+- supporting point
++ a point revealed on →
+> speaker note (press N / feeds ?handout)
+```
+
+`# section` · `## slide` · `- bullet` · `+ step` · `> note` · `![name | caption]` figure · `**bold**` `` `code` `` `$TeX$`. **Paste or drop an image** and Compose inserts it as a captioned figure (auto-downscaled). The live preview *is* your deck — click it and present — and it warns, while you type, if any slide outgrows the canvas. **Import deck** re-opens a downloaded file, recovering outline *and* images. The EN ⇄ 中文 button localises the composer; add `lang: zh` to the outline for a Chinese deck (议程, 问答与讨论, CJK deep links).
+
+## Quick start (HTML path)
+
+1. Open `lectern.html` — it runs from a double-click (`file://`) or any static host, or copy `starter.html` as a skeleton.
 2. Edit the `DECK` config at the bottom of the file (title + byline).
 3. Duplicate any `<section class="slide">` to add a slide; its `id` becomes the shareable deep link (`deck.html#my-slide`).
 4. Mark section starts with `data-section="Name" data-sn="2"` — running heads, the agenda slide, and the jump menu all follow automatically.
@@ -41,13 +60,17 @@ Send the file · link a slide by `#id` · print to PDF (`Ctrl/Cmd+P`, pages pre-
 
 | File | Purpose |
 |---|---|
-| `lectern.html` | The deck + engine. The only file you ship. |
+| `lectern.html` | The demo deck + engine — every component shown with usage snippets. |
+| `compose.html` | Type a plain-text outline → download a finished deck. Live preview + overflow warnings. |
+| `starter.html` | Blank 5-slide skeleton for those who prefer editing HTML directly. |
 | `LECTERN-SPEC.md` | Contracts: invariants, pixel budgets, feature specs. Read §1–§6 before editing. |
 | `LECTERN-DEVNOTES.md` | Living changelog — decisions with their *why*, per release. |
-| `smoke.test.js` | 40 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
+| `smoke.test.js` | 48 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
+| `render-proof.js` | Optional: snapshot the executed DOM for WeasyPrint → PDF page proofs (structure, not pixels). |
+| `build-compose.py` | Regenerates `compose.html` after deck changes (embeds the shell as base64). |
 
 ## Extend
 
-`window.Lectern` exposes `go(n) · next() · prev() · overview() · presenter() · math(i) · check() · on(event, fn) / off`. Events: `"slide" {i, id, el, frag, frags}` (plus `step:true` for in-slide reveals) and `"overview" {on}`. Every change should keep the smoke test green and land with a devnotes entry.
+`window.Lectern` exposes `go(n) · next() · prev() · overview() · presenter() · math(i) · check() · state() · on(event, fn) / off`. Events: `"slide" {i, id, el, frag, frags}` (plus `step:true` for in-slide reveals) and `"overview" {on}`. Every change should keep the smoke test green and land with a devnotes entry.
 
-*Build v2.0 — see `LECTERN-DEVNOTES.md` for history.*
+*Release v2.4 — see `LECTERN-DEVNOTES.md` for history.*

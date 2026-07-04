@@ -50,7 +50,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Lectern — a single-file, academic HTML slide system.">
-<title>Lectern — an academic HTML slide system</title>
+<title>Your Talk Title</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -375,279 +375,48 @@ body.laser-on .stage{cursor:crosshair}
 
     <div class="slides" id="slides">
 
-      <!-- 01 · title ································································ -->
+      <!-- 01 · title — edit every line ·············································· -->
       <section class="slide slide--title" id="title">
         <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
-        <h1>Lectern</h1>
-        <p class="subtitle">A single-file slide system for academic talks</p>
-        <p class="authors">A.&nbsp;Researcher<sup>1</sup> · B.&nbsp;Scholar<sup>2</sup></p>
-        <p class="affil"><sup>1</sup>&nbsp;Institute of Examples &nbsp;&nbsp; <sup>2</sup>&nbsp;Laboratory for Portable Documents</p>
-        <p class="venue">Colloquium on Reproducible Talks<i>·</i>July 2026</p>
-        <div class="titlepills"><span class="pill">v2.0</span><span class="pill">no build step</span><span class="pill">one .html file</span></div>
+        <h1>Your Talk Title</h1>
+        <p class="subtitle">One line that says what this talk claims</p>
+        <p class="authors">F.&nbsp;Lastname<sup>1</sup> · C.&nbsp;Oauthor<sup>2</sup></p>
+        <p class="affil"><sup>1</sup>&nbsp;Your Institute &nbsp;&nbsp; <sup>2</sup>&nbsp;Their Institute</p>
+        <p class="venue">Venue or Seminar Series<i>·</i>Month 2026</p>
+        <div class="titlepills"><span class="pill">preprint 0000.00000</span><span class="pill">draft</span></div>
       </section>
 
-      <!-- 02 · agenda (auto-filled from data-section slides) ························ -->
+      <!-- 02 · agenda — fills itself from your data-section slides ·················· -->
       <section class="slide" id="agenda" data-agenda>
         <header><p class="kicker">Contents</p><h2>Agenda</h2></header>
         <nav class="agenda" aria-label="Sections"></nav>
-        <aside class="notes">The agenda builds itself — add or remove a data-section slide and this page follows. Each row is a live deep link.</aside>
+        <aside class="notes">This page rebuilds itself when you add or remove data-section slides.</aside>
       </section>
 
-      <!-- 03 · section ······························································· -->
-      <section class="slide slide--section" id="foundations" data-section="Foundations" data-sn="1">
+      <!-- 03 · section divider — copy one per part ·································· -->
+      <section class="slide slide--section" id="part-1" data-section="Part One" data-sn="1">
         <p class="sec__no">§ 01</p>
-        <h2>Foundations</h2>
-        <p class="sec__sub">Tokens, layouts and the typographic system — everything downstream derives from this slide’s vocabulary.</p>
+        <h2>Part One</h2>
+        <p class="sec__sub">A sentence on what this part establishes and why the room should care.</p>
       </section>
 
-      <!-- 04 · tokens ································································ -->
-      <section class="slide" id="tokens">
-        <header><p class="kicker">Foundations<i>·</i>Tokens</p><h2>One palette, two ink colours, three families</h2></header>
-        <div class="swatches">
-          <div class="sw"><i style="background:#FFFFFF"></i><b>paper</b><u>#FFFFFF</u></div>
-          <div class="sw"><i style="background:#161B22"></i><b>ink</b><u>#161B22</u></div>
-          <div class="sw"><i style="background:#5A6373"></i><b>ink-2</b><u>#5A6373</u></div>
-          <div class="sw"><i style="background:#1E3D6B"></i><b>lapis</b><u>#1E3D6B</u></div>
-          <div class="sw"><i style="background:#EDF2F8"></i><b>lapis-soft</b><u>#EDF2F8</u></div>
-          <div class="sw"><i style="background:#A62B3A"></i><b>rubric</b><u>#A62B3A</u></div>
-          <div class="sw"><i style="background:#DCE0E6"></i><b>rule</b><u>#DCE0E6</u></div>
-          <div class="sw"><i style="background:#F6F8FA"></i><b>wash</b><u>#F6F8FA</u></div>
-        </div>
-        <div class="specimen">
-          <div class="spec spec--display">Structure &amp; Interpretation<span>STIX Two Text · display</span></div>
-          <div class="spec spec--body">Body copy is set in Inter at 24&nbsp;px — sized for the back row.<span>Inter · body</span></div>
-          <div class="spec spec--mono">μ = 0.317,&nbsp; σ² = 4.2 × 10⁻³<span>JetBrains Mono · data</span></div>
-        </div>
-      </section>
-
-      <!-- 05 · layout catalogue ······················································ -->
-      <section class="slide h-compact" id="layouts">
-        <header><p class="kicker">Foundations<i>·</i>Layouts</p><h2>Six layouts cover a full talk</h2></header>
-        <div class="wires">
-          <div class="wireCard">
-            <div class="wire"><i class="wd" style="left:48%;top:26%"></i><i class="wb" style="left:27%;top:46%;width:46%"></i><i class="wb" style="left:36%;top:60%;width:28%"></i></div>
-            <b>.slide--title</b>
-          </div>
-          <div class="wireCard">
-            <div class="wire"><i class="wb" style="left:10%;top:34%;width:13%;height:8%;background:var(--lapis-2)"></i><i class="wb" style="left:10%;top:50%;width:52%;height:10%"></i></div>
-            <b>.slide--section</b>
-          </div>
-          <div class="wireCard">
-            <div class="wire"><i class="wb" style="left:10%;top:16%;width:44%;height:9%;background:var(--lapis-2)"></i><i class="wb" style="left:10%;top:40%;width:74%"></i><i class="wb" style="left:10%;top:55%;width:66%"></i><i class="wb" style="left:10%;top:70%;width:70%"></i></div>
-            <b>default content</b>
-          </div>
-          <div class="wireCard">
-            <div class="wire"><i class="wb" style="left:10%;top:16%;width:44%;height:9%;background:var(--lapis-2)"></i><i class="wb" style="left:10%;top:42%;width:36%"></i><i class="wb" style="left:10%;top:57%;width:32%"></i><i class="wb" style="left:54%;top:42%;width:36%"></i><i class="wb" style="left:54%;top:57%;width:30%"></i></div>
-            <b>.cols</b>
-          </div>
-          <div class="wireCard">
-            <div class="wire"><i style="position:absolute;inset:13% 7% 12%;border:1.5px solid var(--rule-strong);border-radius:4px"></i><i class="wb" style="left:11%;top:17%;width:22%;height:5.5%"></i></div>
-            <b>.slide--canvas</b>
-          </div>
-          <div class="wireCard">
-            <div class="wire"><i class="wd" style="left:48%;top:30%"></i><i class="wb" style="left:31%;top:48%;width:38%"></i><i class="wb" style="left:38%;top:62%;width:24%"></i></div>
-            <b>end / thanks</b>
-          </div>
-        </div>
-      </section>
-
-      <!-- 06 · body copy ····························································· -->
-      <section class="slide" id="writing">
-        <header><p class="kicker">Foundations<i>·</i>Writing</p><h2>Slides are plain HTML paragraphs</h2></header>
-        <p class="lead">Write the way you would in a paper — paragraphs, lists, inline references. The system supplies rhythm and restraint.<sup class="fnref">†</sup></p>
+      <!-- 04 · content — duplicate this for most slides ····························· -->
+      <section class="slide" id="first-claim">
+        <header><p class="kicker">Part One<i>·</i>Topic</p><h2>A claim stated as a sentence</h2></header>
+        <p class="lead">Open with the takeaway, not the setup — the room reads this line first.</p>
         <ul>
-          <li>List markers hang in the margin, in lapis — scan lines stay flush.</li>
-          <li class="frag frag--dim">Inline tokens read as data: <code>--lapis</code>, <code>go(7)</code>, <code>#frames</code>.
-            <ul><li>Nested points demote to a middle dot.</li></ul>
-          </li>
-          <li class="frag">Reserve <mark>rubric red</mark> for the one thing the room must remember.</li>
-          <li class="frag">Tag artifacts with pills: <span class="pill">arXiv 2406.01234</span> <span class="pill">CC-BY 4.0</span></li>
+          <li>Evidence or reasoning the claim rests on.</li>
+          <li class="frag">A step revealed on <kbd>→</kbd> — delete <code>class="frag"</code> if you want it static.</li>
+          <li class="frag">Inline math works anywhere: <span class="math">\hat{y}=f_\theta(x)</span>.</li>
         </ul>
-        <div class="footnote"><sup>†</sup> Tufte, E. — <em>The Visual Display of Quantitative Information</em>, Graphics Press, 1983.</div>
+        <aside class="notes">Speaker notes: press N to preview; they also become the ?handout pages.</aside>
       </section>
 
-      <!-- 07 · numbered environments ················································· -->
-      <section class="slide" id="blocks">
-        <header><p class="kicker">Foundations<i>·</i>Environments</p><h2>Definitions and theorems, numbered by CSS</h2></header>
-        <div class="block block--def">
-          <span class="block__label">Definition</span>
-          <p>A <b>slide system</b> is a single HTML document whose sections are addressable, printable and embeddable.</p>
-        </div>
-        <div class="block block--thm">
-          <span class="block__label">Theorem</span>
-          <p>If a deck has no build step and no external assets, it can be shared anywhere HTML can travel.</p>
-        </div>
-        <div class="block block--note">
-          <span class="block__label">Note</span>
-          <p>Counters are pure CSS — even equations join in: <span class="math">e^{i\pi}+1=0</span>. Add environments in any order; the numbering follows.</p>
-        </div>
-        <aside class="notes">Speaker notes live in an &lt;aside class="notes"&gt; — invisible to the audience until you press N. Use them for timings and reminders.</aside>
-      </section>
-
-      <!-- 08 · figures & tables ······················································ -->
-      <section class="slide" id="figures">
-        <header><p class="kicker">Foundations<i>·</i>Evidence</p><h2>Figures and booktabs tables</h2></header>
-        <div class="cols cols--wideL">
-          <figure class="fig">
-            <svg class="chart" viewBox="0 0 520 300" role="img" aria-label="Line chart: attention over slide density">
-              <g style="stroke:var(--rule)" stroke-dasharray="3 6"><line x1="46" y1="92" x2="500" y2="92"/><line x1="46" y1="170" x2="500" y2="170"/></g>
-              <g style="stroke:var(--rule-strong)"><line x1="46" y1="18" x2="46" y2="248"/><line x1="46" y1="248" x2="500" y2="248"/></g>
-              <g font-family="JetBrains Mono, monospace" font-size="12" style="fill:var(--ink-2)">
-                <text x="38" y="96" text-anchor="end">60</text>
-                <text x="38" y="174" text-anchor="end">30</text>
-                <text x="38" y="252" text-anchor="end">0</text>
-                <text x="273" y="284" text-anchor="middle">words per slide →</text>
-              </g>
-              <polyline fill="none" style="stroke:var(--lapis)" stroke-width="2.5" points="46,70 118,84 190,102 262,128 334,168 406,205 478,232"/>
-              <circle cx="118" cy="84" r="4" style="fill:var(--lapis)"/><circle cx="262" cy="128" r="4" style="fill:var(--lapis)"/><circle cx="406" cy="205" r="4" style="fill:var(--lapis)"/>
-              <circle cx="46" cy="70" r="5.5" style="fill:var(--rubric)"/>
-            </svg>
-            <figcaption><b>Figure 1</b> — Audience attention against slide density (synthetic data; the point stands).</figcaption>
-          </figure>
-          <table class="tbl">
-            <caption><b>Table 1</b> — Built-in layouts and their classes.</caption>
-            <thead><tr><th>Layout</th><th>Class</th><th class="num">Slides</th></tr></thead>
-            <tbody>
-              <tr><td>Title page</td><td><code>slide--title</code></td><td class="num">1</td></tr>
-              <tr><td>Section divider</td><td><code>slide--section</code></td><td class="num">3</td></tr>
-              <tr><td>Two column</td><td><code>cols</code></td><td class="num">4</td></tr>
-              <tr><td>Full-bleed embed</td><td><code>slide--canvas</code></td><td class="num">1</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- 09 · section ······························································· -->
-      <section class="slide slide--section" id="embedding" data-section="Embedding" data-sn="2">
-        <p class="sec__no">§ 02</p>
-        <h2>Embedding</h2>
-        <p class="sec__sub">Frames for the outside world, and inner HTML pages for demos that carry their own styles and scripts.</p>
-      </section>
-
-      <!-- 10 · the in-page frame ····················································· -->
-      <section class="slide h-compact" id="frames">
-        <header><p class="kicker">Embedding<i>·</i>Frame</p><h2>The in-page frame</h2></header>
-        <div class="cols">
-          <figure class="frame frame--fill">
-            <figcaption class="frame__bar"><i class="frame__dot"></i>external · example.org<a class="frame__link" href="https://example.org" target="_blank" rel="noopener">open ↗</a></figcaption>
-            <iframe data-src="https://example.org" loading="lazy" title="External page: example.org"></iframe>
-          </figure>
-          <div>
-            <pre class="code"><code>&lt;figure class="frame frame--fill"&gt;
-  &lt;figcaption class="frame__bar"&gt;…&lt;/figcaption&gt;
-  &lt;iframe data-src="https://example.org"&gt;&lt;/iframe&gt;
-&lt;/figure&gt;
-&lt;!-- fixed aspect instead: style="--ratio:16/10" --&gt;</code></pre>
-            <ul style="margin-top:20px">
-              <li><code>data-src</code> loads lazily, one slide ahead — heavy demos never slow the deck.</li>
-              <li><code>frame--fill</code> stretches to match its column; <code>--ratio</code> pins an aspect instead.</li>
-              <li>The caption bar states provenance; add <code>sandbox</code> for untrusted sources.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- 11 · inner HTML pages ······················································ -->
-      <section class="slide h-compact" id="inner-pages">
-        <header><p class="kicker">Embedding<i>·</i>Inner page</p><h2>Inner HTML pages, isolated by design</h2></header>
-        <div class="cols">
-          <figure class="frame frame--fill">
-            <figcaption class="frame__bar"><i class="frame__dot"></i>inner page · lives inside this file</figcaption>
-            <template data-page>
-              <style>
-                html,body{margin:0;height:100%}
-                body{display:grid;place-items:center;background:#0E1524;color:#EAF0FF;font:15px/1.45 "Segoe UI",system-ui,sans-serif;text-align:center}
-                canvas{display:block;margin:0 auto 14px}
-                p{margin:0 0 16px;opacity:.85}
-                button{font:600 14px/1 inherit;color:#0E1524;background:#7FB3FF;border:0;border-radius:8px;padding:10px 18px;cursor:pointer}
-                button:hover{background:#A6C9FF}
-              </style>
-              <div>
-                <canvas id="c" width="400" height="110"></canvas>
-                <p>This page ships its own CSS and JS.<br><small>Nothing leaks in; nothing leaks out.</small></p>
-                <button id="b">clicked 0×</button>
-              </div>
-              <script>
-                var c=document.getElementById('c'),x=c.getContext('2d'),t=0,k=0;
-                var b=document.getElementById('b');
-                b.onclick=function(){b.textContent='clicked '+(++k)+'×';};
-                (function loop(){
-                  x.clearRect(0,0,400,110);x.beginPath();
-                  for(var i=0;i<=400;i++){var y=55+Math.sin(i/32+t)*26*Math.sin(t/2+i/150);i?x.lineTo(i,y):x.moveTo(i,y);}
-                  x.strokeStyle='#7FB3FF';x.lineWidth=2;x.stroke();t+=.04;requestAnimationFrame(loop);
-                })();
-              </script>
-            </template>
-          </figure>
-          <div>
-            <p>Author the page inside <code>&lt;template data-page&gt;</code> — it becomes a sandboxed <code>srcdoc</code> iframe.</p>
-            <pre class="code"><code>&lt;figure class="frame frame--fill"&gt;
-  &lt;figcaption class="frame__bar"&gt;…&lt;/figcaption&gt;
-  &lt;template data-page&gt;
-    &lt;style&gt;/* page-scoped css */&lt;/style&gt;
-    &lt;script&gt;/* page-scoped js */&lt;/script&gt;
-  &lt;/template&gt;
-&lt;/figure&gt;</code></pre>
-            <ul style="margin-top:20px">
-              <li>Deck styles never bleed in — note the dark page inside a white deck.</li>
-              <li>No URL, no server — it travels in the file.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- 12 · full-bleed embed ······················································ -->
-      <section class="slide slide--canvas" id="canvas">
-        <figure class="frame frame--fill">
-          <figcaption class="frame__bar"><i class="frame__dot"></i>full-bleed · <code style="border:0;background:none;padding:0 2px">slide--canvas</code> — swap <code style="border:0;background:none;padding:0 2px">data-src</code> for your demo<a class="frame__link" href="https://example.org" target="_blank" rel="noopener">open ↗</a></figcaption>
-          <iframe data-src="https://example.org" loading="lazy" title="Full-bleed embedded page"></iframe>
-        </figure>
-      </section>
-
-      <!-- 13 · section ······························································· -->
-      <section class="slide slide--section" id="sharing" data-section="Sharing" data-sn="3">
-        <p class="sec__no">§ 03</p>
-        <h2>Sharing</h2>
-        <p class="sec__sub">A deck is only as good as its afterlife: linkable, printable, embeddable, and small enough to attach.</p>
-      </section>
-
-      <!-- 14 · sharing features ······················································ -->
-      <section class="slide h-compact" id="share">
-        <header><p class="kicker">Sharing<i>·</i>Afterlife</p><h2>Built to be passed around</h2></header>
-        <div class="cols">
-          <div>
-            <ul>
-              <li><b>One file.</b> Attach it, email it, drop it on any static host.</li>
-              <li><b>Deep links.</b> Every slide id is an address: <code>deck.html#frames</code>.</li>
-              <li><b>PDF.</b> Print with <kbd>Ctrl</kbd>+<kbd>P</kbd> — pages are pre-sized at 1280 × 720, with running heads and folios.</li>
-              <li><b>Embeddable.</b> The deck itself sits happily in a frame:</li>
-            </ul>
-            <pre class="code"><code>&lt;iframe src="deck.html#tokens"
-        width="960" height="540"&gt;&lt;/iframe&gt;</code></pre>
-          </div>
-          <div>
-            <div class="keys">
-              <div class="key"><span class="kk"><kbd>←</kbd><kbd>→</kbd></span><span>Navigate · steps first</span></div>
-              <div class="key"><span class="kk"><kbd>PgUp</kbd><kbd>PgDn</kbd></span><span>Whole slides</span></div>
-              <div class="key"><span class="kk"><kbd>Home</kbd><kbd>End</kbd></span><span>First / last</span></div>
-              <div class="key"><span class="kk"><kbd>O</kbd></span><span>Overview grid</span></div>
-              <div class="key"><span class="kk"><kbd>F</kbd></span><span>Fullscreen</span></div>
-              <div class="key"><span class="kk"><kbd>N</kbd></span><span>Speaker notes</span></div>
-              <div class="key"><span class="kk"><kbd>P</kbd><kbd>B</kbd></span><span>Presenter · blackout</span></div>
-              <div class="key"><span class="kk"><kbd>/</kbd><kbd>G</kbd></span><span>Search · sections</span></div>
-              <div class="key"><span class="kk"><kbd>L</kbd><kbd>I</kbd><kbd>C</kbd></span><span>Laser · ink · clear</span></div>
-              <div class="key"><span class="kk"><kbd>T</kbd><kbd>D</kbd></span><span>Theme · audit</span></div>
-            </div>
-            <p class="small" style="margin-top:18px">Clicked into an embed? The keys belong to it — use the ‹ › buttons below, or click the margin first.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 15 · end ··································································· -->
+      <!-- 05 · end ··································································· -->
       <section class="slide slide--end" id="end">
         <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
         <h2>Questions &amp; discussion</h2>
-        <p class="contact"><b>a.researcher@example.edu</b> · Institute of Examples</p>
+        <p class="contact"><b>you@example.edu</b> · Your Institute</p>
         <p class="src">slides — this file is the source: view, copy, edit, share</p>
       </section>
 
@@ -680,8 +449,8 @@ body.laser-on .stage{cursor:crosshair}
 
 /* ── deck config — edit me ─────────────────────────────────── */
 var DECK={
-  shortTitle:"Lectern",
-  byline:"A. Researcher · Colloquium on Reproducible Talks · 2026"
+  shortTitle:"Your Talk",
+  byline:"F. Lastname · Venue · 2026"
 };
 
 var $=function(s){return document.querySelector(s);};
