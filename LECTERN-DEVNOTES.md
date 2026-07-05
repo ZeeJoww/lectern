@@ -2,7 +2,92 @@
 
 Living log for `lectern.html`. **Newest entry first.** Every change lands with an entry using the template at the bottom — decisions with their *why*, testing evidence, and handoff pointers. Companions: `LECTERN-SPEC.md` (contracts — read §1–§6 before coding), `smoke.test.js` (automated checks; extend it with every feature).
 
-Status ledger: **v2.4** · fix: fragment links break inside srcdoc embeds · deck engine patched (both decks + Compose shell) · smoke 55/55.
+Status ledger: **v2.24** · Roadmap 3 complete (H0–H9) · smoke 94/94 (+2 strict-gated) · a11y green · strict proof parallel (`--jobs`) · deck Build v2.21 (last deck-touching release) · MANUAL-QA.md scripts the human pass.
+
+Roadmap 3 issued 2026-07-05 → `LECTERN-ROADMAP-3.md`. **All ten items shipped: H0–H9 (v2.15–v2.24).**
+
+Roadmap 2 issued 2026-07-04 → `LECTERN-ROADMAP-2.md`. **All ten items shipped: G0–G2 (v2.5–2.7), G3–G9 (v2.8–2.14).**
+
+## v2.15–v2.24 — Roadmap-3 in one integrated release (2026-07-05)
+
+**v2.15 · H0 overview keyboard.** A roving `.is-sel` ring (one selection, not fifteen tab stops): ←→ move ±1, ↑↓ move by *row* via `offsetTop` geometry (flat geometry — jsdom — falls back to ±1, as designed), Home/End bound the ring, Enter commits and closes, the announcer narrates each move. Enter on a focused button/anchor never double-fires.
+
+**v2.16 · H1 backups.** `# Title ::backup` → the divider carries `data-backup`; the engine treats *everything from the first backup slide on* as appendix. `Nmain` detection uses `hasAttribute` (order-independent — bug 1 below); folios become `A1…` with `tot = Nmain`; the progress bar clamps; `End` stops at the last main slide while PgDn still crosses (the designed escape hatch); the agenda excludes appendix sections, the popover keeps them under a hairline, muted; `time:` spreads over main slides only; a lint fires if a normal `#` follows a backup one.
+
+**v2.17 · H2 rehearsal.** Presenter **● rec** logs slide transitions; stopping stores the run (last 3) under `localStorage['lectern-runs:<title>']` — R6: nothing leaves the machine, nothing enters the deck file. The report formatter lives in the **engine** as `Lectern._report(marks, endMs)` so it is jsdom-testable and the popup stays thin: `04  #frames  2:10  / plan 3:00  −0:50`, plus totals and copy-report.
+
+**v2.18 · H3 archiver.** The lint block gains **Archive/归档**: each external image is fetched through a seam (`_setFetch` for tests), pushed through the shared blob pipeline (now with a 300 ms decode-timeout fallback so environments without an image decoder keep the raw bytes), registered as `pic-n`, and its outline token rewritten through the undo-preserving path. Per-URL honesty: CORS/HTTP failures are named and their tokens untouched. Videos stay excluded.
+
+**v2.19 · H4 math embed.** Download option: fetch the pinned KaTeX css+js, inline **the referenced woff2 fonts as data-URIs** (the part that makes "offline" true), splice out the CDN lines. Two hard guards: any fetch failure returns the deck byte-identical with a reason; a `</script` literal in the renderer source aborts rather than escapes-and-hopes (invariant 10).
+
+**v2.20 · H5.** Export outline as `<slug>.outline.txt`; Import accepts raw `.txt` outlines directly. Markdown auto-convert stays deferred per the roadmap.
+
+**v2.21 · H7.** `_pv()` gains `nextStep {k,K,text}` — the truthful answer to "what does → do next" — and `backup`; the presenter's next pane and position line render both. Last deck-touching release ⇒ deck Build v2.21.
+
+**v2.22 · H6 QR.** `link:` → deterministic inline-SVG QR (error-correction M, `currentColor`, crispEdges) + the visible URL beneath it on the end slide. Encoder vendored per R7: `vendor-qrcode.js` (qrcode-generator v2.0.4, MIT, provenance header) embedded in Compose at build time — the **deck** receives only path data.
+
+**v2.23 · H9.** Download-options row: the H4 checkbox plus a theme select that upserts a `theme:` outline key; Compose splices `data-theme` onto `<html>` statically, and the pre-paint script only overrides on a stored viewer preference — initial theming with zero engine change, exactly as planned.
+
+**v2.24 · H8.** `render-proof --only=id[,id]` for single-slide iteration and `--jobs N` (pooled WeasyPrint spawns; the 15-slide strict pass drops well under 10 s). `MANUAL-QA.md` committed: the ~5-minute checklist of everything the ladder cannot see; release entries should name the lines run.
+
+**Bugs the tests caught — three lessons for the file.**
+1. *Order beats intent:* the backup/pacing block was anchored **before** the metadata loop, so `dataset.backup` (loop-written) read falsy and the A-folios were clobbered by the loop's own numbering. Fix: `hasAttribute('data-backup')` (markup-time truth) for `Nmain`, and the folio pass relocated after the loop. When a block reads what another block writes, the anchor comment must say so.
+2. *Class namespaces:* the overview ring reused `is-sel`, which the search results already used — a "no `.is-sel` anywhere" assertion failed on a leftover search row. Tests now use scoped selectors; flagged as naming hygiene for future shared state classes.
+3. *Vendored code shifts baselines:* the "no `\uXXXX` escapes" check began matching legitimate escapes inside the embedded QR library; the assertion now scopes to markup only. Every vendor drop should re-ask which global assertions it invalidates.
+
+**Testing.** smoke **94/94** (+2 strict-gated) · a11y green ×4 · strict green on both decks with `--jobs 4` · an appendix fixture boots, folios, paginates and paces exactly as specced. Compose is 173 KB (QR lib + features; R4 caps decks, not tools — generated text decks remain ~55 KB).
+
+---
+
+## v2.8–v2.14 — Roadmap-2 P1+P2 in one integrated release (2026-07-05)
+
+**v2.8 · G3 columns & placed figures.** A line containing only `|` splits a slide's body into `.cols`; one split per slide by design. Figures gained a third field — `![name | caption | fill]` — where a *lone* fill figure in a cell stretches to the column (`align-self:stretch`, `object-fit:contain`; the 420 px height cap lifts in fill mode). `left/right/full` parse as reserved no-ops (R2). Figures are now numbered per deck: `<b>Figure n</b> — caption` (图 n in zh) — a G3 side-benefit that made pasted images cite-able.
+
+**v2.9 · G4 tables.** Contiguous `|`-lines form a `.tbl` booktabs table; a `|---|---:|` row after the first marks the header and right-aligns `:`-suffixed columns via the deck's existing `.num` class; `|= caption` becomes the numbered `<caption><b>Table n</b> — …</caption>` (表 n). Cells run through `fmt()`, so math-in-cells works. No spans — rejected in the roadmap, unchanged here.
+
+**v2.10 · G5 citations.** Header block gains a multi-line `refs:` key (indented `key: formatted citation` lines; dedent ends the block — blank lines don't). Inline `[@key]` numbers by first use and renders `<sup class="cite">[n]</sup>`; unknown keys show `[?key]` in rubric, same philosophy as missing images. If any citation fired and the author didn't write a References/参考文献 slide, one is appended before `end` (`ol.refs`, two CSS columns past six entries). Deliberately not BibTeX: speakers paste formatted strings.
+
+**v2.11 · G6 accessibility.** The big one is `inert`: hidden slides were keyboard-reachable (agenda links inside invisible slides — axe's `aria-hidden-focus` in waiting). `setInert()` now runs on every `go()` and overview toggle — overview must *lift* inert or thumbnails stop receiving clicks entirely. Plus: a visually-hidden `aria-live` announcer ("04 / 15 · Title" — numerals + title, deliberately language-neutral), the section popover opens focused with ↑↓ traversal and Escape-returns-to-trigger (global keys guard `#toc`), and Tab is contained in the search dialog. New gate: `a11y.test.js` — axe-core in jsdom over demo/starter/Compose/generated (two rules off with written justifications) plus a WCAG contrast table computed from the token blocks; all twelve theme pairs clear with margin.
+
+**v2.12 · G7 pacing.** Outline: `time: 25m` plus optional `## Title @4m` (suffix stripped from the title); explicit budgets keep theirs, the remainder spreads over unbudgeted content slides. Budgets land as `data-min`; the engine precomputes cumulative targets and `_pv()` gains `plan/slideMin/planTot` (all `null` when unplanned — zero cost). The presenter shows `plan 12:00 · +1:30 behind`, rubric past two minutes. Informs, never advances.
+
+**v2.13 · G8 external media + honest size.** `![https://… | cap]` renders an external `<img>` (no `data-name`, so Import doesn't pretend it's an asset); `!video[url | cap]` reuses the lazy `frame`+`video[data-src]` path. Both push a persistent lint: *external asset — no longer self-contained* (外部资源…). The status bar now always shows the generated size; past 8 MB it goes rubric with an email hint. Data-URL video stays rejected.
+
+**v2.14 · G9 transitions.** `::fx slide` → `data-fx="slide"`: the base fade's translateY simply becomes translateX(28 px); `::fx none` kills the transition. Pure CSS + attribute — no engine change; print pins `transform:none !important`; overview/reduced-motion already win by cascade order.
+
+**Testing.** smoke 75/75 (+2 strict-gated) — fifteen new assertions including a booted `time:`-budgeted deck asserting `plan === 240` at slide entry and the inert/announcer/popover keyboard contracts. `a11y.test.js` green ×4. **Strict render-proof green on both decks after all deck edits** — the ladder's promise held: no human browser pass was needed to trust this release. Two test-side lessons: dispatch Escape at the *focused element* (browsers do; window-dispatch skips focus-scoped handlers), and never index-compare against the first `<div` of a full document.
+
+---
+
+## v2.7 — G2 · one-click overflow fixes (2026-07-04)
+
+## v2.7 — G2 · one-click overflow fixes (2026-07-04)
+
+**Grammar.** Per-slide directive lines `::word [args]` (R2-safe sigil). `::compact` → `h-compact`; **unknown directives parse and are ignored** — future words (`::fx`, G9) won't break old Compose builds. Fixture pinned in smoke.
+
+**Chips.** Every overflow warning row gains **Split** / **Compact** (拆分 / 紧凑). Both are plain text edits to the outline — visible and undoable (`execCommand('insertText')` over a select-all keeps the browser undo stack; jsdom/fallback path assigns `.value`). Split moves the trailing ⌈half⌉ of the slide's *content* lines (notes `>` and directives `::` stay with part one) into a new `## Title — cont.` / `（续）` block inserted after; convergent because the chip persists while the audit still flags. Compact inserts `::compact` under the heading, idempotently. Block bounds come from the G1 provenance map, refreshed from the live textarea before each fix.
+
+**Testing.** smoke: directive rendering + unknown-directive tolerance; Compact inserts once; Split produces a `-cont` slide that builds, keeps notes and the directive on part one.
+
+## v2.6 — G1 · outline ⇄ preview sync (2026-07-04)
+
+**Provenance.** The parser records the source line of every `#`/`##`; `buildDeck` emits `MAP = [{i, id, start, src}]` (title = line 0; agenda/end are `src:false` so the caret never resolves to them). Exposed as `_map()` / `_caretIndex()` for tests and G2.
+
+**Caret → slide.** `keyup`/`click` (150 ms debounce) resolve the caret line to its block and `Lectern.go()` the preview. **Slide → outline:** a `'slide'` listener attached after every rebuild scrolls the textarea (scrollTop only — *never* the caret or focus) when the change originated in the preview; the loop guard is simply "textarea focused ⇒ skip". **Rebuilds keep place:** previously every keystroke reset the preview to slide 1 (a real pre-existing wart); now the caret's block wins while typing, `lastPvId` otherwise.
+
+**Testing.** Mapping + caret resolution asserted on the sample fixture; live-iframe behaviour is a browser check (jsdom doesn't run srcdoc navigation reliably).
+
+## v2.5 — G0 · strict render-proof + three real overflows fixed (2026-07-04)
+
+**Fonts.** Inter + JetBrains Mono via apt; **STIX Two Text** is not packaged — pulled the v2.0.2 OTFs from `stipub/stixfonts` `archive/` via **codeload.github.com** (the REST API returned 403 in this network; the release assets live off-repo). `fc-list` must show all three families or the tool downgrades to the structural check *and says so* — it never fails on lying metrics.
+
+**Detection.** `render-proof.js --strict`: snapshot with the two `overflow:hidden` guards stripped (so overflow becomes *page fragmentation*), then render each slide in isolation (`display:none` all + `nth-of-type` re-show). A fitting slide = exactly **2 pages** (content + trailing break blank); every extra page is spill. Exit code = offender count; output carries the ±1-line hinting caveat. Positive control: a 22-bullet generated fixture flags. Opt-in smoke gate: `SMOKE_STRICT=1`.
+
+**First run caught three real bugs.** `#frames`, `#inner-pages`, `#share` all spilled — my v1.1 *arithmetic* budgets used estimated Inter advances; real glyphs wrap wider. The spilled items (a whole bullet ×2, the embed snippet) were beyond hinting noise, so the fix was content: tighter bullets and shorter snippets on all three slides (deck → Build v2.5). Both decks now pass strict; the D-key browser walk that was "owed by a human" since v2.0 is finally automated.
+
+---
+
+## v2.4 — fix: in-deck links navigate away inside srcdoc embeds (2026-07-04)
 
 ---
 

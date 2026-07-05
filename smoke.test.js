@@ -207,6 +207,69 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     ev2.defaultPrevented && cur().id === 'agenda'
     && !d.querySelector('#deck').classList.contains('is-overview'));
 
+  /* ── G6: announcer, inert, popover keyboard ── */
+  t('G6: announcer narrates navigation',
+    d.querySelector('#announce').textContent.startsWith(cur().dataset.n + ' / 15'));
+  t('G6: hidden slides are inert, current is not',
+    !cur().hasAttribute('inert') && d.querySelectorAll('.slide[inert]').length === 14);
+  w.Lectern.overview(true);
+  const inOv = d.querySelectorAll('.slide[inert]').length;
+  w.Lectern.overview(false);
+  t('G6: overview lifts inert so thumbnails stay clickable',
+    inOv === 0 && d.querySelectorAll('.slide[inert]').length === 14);
+  key('g');
+  const tocAs = d.querySelectorAll('#toc a');
+  const focusedInToc = d.activeElement && d.activeElement.closest('#toc');
+  key('ArrowDown', d.activeElement);
+  t('G6: popover opens focused; arrows traverse; deck does not move',
+    !!focusedInToc && d.activeElement === tocAs[1] && cur().id === 'agenda');
+  key('Escape', d.activeElement);
+  t('G6: Escape closes the popover and restores the trigger',
+    !d.querySelector('#toc').classList.contains('is-open')
+    && d.activeElement === d.querySelector('#runSection'));
+  t('G7: unplanned decks expose no pace fields', w.Lectern._pv().plan === null);
+  t('G9: deck ships the data-fx variant CSS',
+    fs.readFileSync(file, 'utf8').includes('.slide[data-fx="slide"]'));
+
+  /* ── H0: overview keyboard ── */
+  await goId('tokens');
+  w.Lectern.overview(true);
+  t('H0: overview seeds the ring on the current slide', cur().classList.contains('is-sel'));
+  key('ArrowRight');
+  t('H0: arrows move the ring, never the deck',
+    d.querySelector('.slide.is-sel').id === 'layouts' && cur().id === 'tokens');
+  key('ArrowDown');
+  t('H0: row-move falls back to ±1 when geometry is flat',
+    d.querySelector('.slide.is-sel').id === 'writing');
+  key('Home');
+  t('H0: Home moves the ring first and announces it',
+    d.querySelector('.slide.is-sel').id === 'title'
+    && d.querySelector('#announce').textContent.startsWith('01 / 15'));
+  key('End'); key('Enter');
+  t('H0: Enter commits the ring and closes the grid',
+    cur().id === 'end'
+    && !d.querySelector('#deck').classList.contains('is-overview')
+    && !d.querySelector('.slide.is-sel'));
+
+  /* ── H2: rehearsal report formatter ── */
+  const rep = w.Lectern._report(
+    [{ n: '01', id: 'title', plan: 1, ms: 0 }, { n: '02', id: 'agenda', plan: 0.5, ms: 70000 }], 100000);
+  t('H2: report — dwell vs plan per slide, signed deltas, totals',
+    rep.includes('01  #title  1:10  / plan 1:00  +0:10')
+    && rep.includes('02  #agenda  0:30  / plan 0:30  +0:00')
+    && rep.endsWith('total  1:40  / plan 1:30'));
+
+  /* ── H7: next-step preview ── */
+  await goId('layouts'); w.Lectern.next(); // forward entry: #writing, steps hidden
+  const pvs = w.Lectern._pv();
+  w.Lectern.next(); w.Lectern.next(); w.Lectern.next(); // reveal all three
+  const pvz = w.Lectern._pv();
+  t('H7: presenter previews the coming step, then the coming slide',
+    pvs.nextStep && pvs.nextStep.k === 1 && pvs.nextStep.K === 3
+    && pvs.nextStep.text.startsWith('Inline tokens')
+    && pvz.nextStep === null && /Definitions/.test(pvz.next)
+    && pvs.backup === false);
+
   /* ── engine regressions ── */
   await goId('inner-pages');
   const fr = d.querySelector('#inner-pages iframe[sandbox]');
@@ -278,8 +341,8 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     const src = fs.readFileSync('compose.html', 'utf8');
     let mk = src;
     (src.match(/<script[^>]*>[\s\S]*?<\/script>/g) || []).forEach((b) => { mk = mk.replace(b, ''); });
-    t('no \\uXXXX escapes anywhere; UI shows real characters',
-      !/\\u[0-9a-fA-F]{4}/.test(src)
+    t('no \\uXXXX escapes in the UI markup; real characters shown',
+      !/\\u[0-9a-fA-F]{4}/.test(mk)
       && C.w.document.querySelector('h1').textContent.includes('\u00b7')
       && C.w.document.querySelector('#cheat').textContent.includes('\u2192'));
 
@@ -313,11 +376,211 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     const pDeck = C.w.buildDeck('title: T\n\n## Fig slide\n![pic-1 | A tiny dot]\n![nope | ghost]');
     t('pasted picture renders as a captioned figure; missing asset warns',
       pDeck.includes('data-name="pic-1"') && pDeck.includes(px)
-      && pDeck.includes('<figcaption>A tiny dot</figcaption>')
+      && /<figcaption><b>Figure 1<\/b> — A tiny dot<\/figcaption>/.test(pDeck)
       && /missing image: nope|\u7f3a\u5c11\u56fe\u7247/.test(pDeck));
     const rec = C.w.extractAssets(pDeck);
     t('assets round-trip from the downloaded deck', rec['pic-1'] === px
       && Object.keys(rec).length === 1);
+
+    /* ── G1: outline ⇄ preview provenance ── */
+    C.w.setLang('en');
+    const sTxt = C.w.document.querySelector('#outline').value;
+    C.w.buildDeck(sTxt);
+    const map = C.w._map();
+    const lines = sTxt.split('\n');
+    t('G1: provenance map — every block knows its line',
+      map.length === 8 && map[0].id === 'title' && !map[1].src /* agenda */
+      && map.find((m) => m.id === 'one-html-file').start
+         === lines.findIndex((l) => l.startsWith('## One HTML file')));
+    const caretLn = lines.findIndex((l) => l.includes('Press **T**'));
+    t('G1: a caret line resolves to its slide',
+      C.w._caretIndex(caretLn).id === 'one-html-file'
+      && C.w._caretIndex(0).id === 'title');
+
+    /* ── G2: ::compact grammar + one-click fixes ── */
+    t('G2: ::compact renders h-compact and unknown directives are ignored',
+      /class="slide h-compact" id="a"/.test(C.w.buildDeck('title: T\n\n## A\n::compact\n::future x\n- x'))
+      && !/class="slide h-compact"/.test(C.w.buildDeck('title: T\n\n## A\n- x')));
+    C.w.document.querySelector('#outline').value = sTxt;
+    C.w.fixSlide('why-sharing-slides-is-hard', 'compact');
+    let v = C.w.document.querySelector('#outline').value;
+    t('G2: Compact inserts the directive under the heading, once',
+      v.includes('## Why sharing slides is hard\n::compact')
+      && (C.w.fixSlide('why-sharing-slides-is-hard', 'compact'),
+          C.w.document.querySelector('#outline').value.split('::compact').length === 2));
+    C.w.fixSlide('why-sharing-slides-is-hard', 'split');
+    v = C.w.document.querySelector('#outline').value;
+    const contDeck = C.w.buildDeck(v);
+    t('G2: Split moves the trailing half to a cont. slide that builds',
+      v.includes('## Why sharing slides is hard — cont.')
+      && contDeck.includes('id="why-sharing-slides-is-hard-cont"')
+      && contDeck.includes('h-compact') /* directive stayed on part one */
+      && v.indexOf('> Ask who has reopened') < v.indexOf('— cont.') /* notes stay on part one */);
+
+    /* ── G3: columns + fill figure ── */
+    const colDeck = C.w.buildDeck('title: T\n\n## Two up\nLead.\n- left point\n|\n![pic-1 | Side view | fill]');
+    t('G3: lone | splits into .cols; lone fill figure stretches its cell',
+      colDeck.includes('<div class="cols">')
+      && colDeck.includes('align-self:stretch')
+      && colDeck.includes('object-fit:contain')
+      && /<b>Figure 1<\/b> — Side view/.test(colDeck)
+      && /class="cols"><div><p class="lead">Lead\./.test(colDeck));
+
+    /* ── G4: tables ── */
+    const tb = C.w.buildDeck('title: T\n\n## Tab\n| Model | Acc |\n|---|---:|\n| A | 0.91 |\n| B | 0.87 |\n|= Results on the dev set');
+    t('G4: |table| → booktabs with header, right-aligned numerics, numbered caption',
+      tb.includes('<table class="tbl">')
+      && tb.includes('<thead><tr><th>Model</th><th class="num">Acc</th></tr></thead>')
+      && tb.includes('<td class="num">0.91</td>')
+      && /<caption><b>Table 1<\/b> — Results on the dev set<\/caption>/.test(tb));
+
+    /* ── G5: citations + auto references ── */
+    const rf = C.w.buildDeck('title: T\nrefs:\n  smith2020: Smith et al. (2020). A paper. Venue.\n  li2023: Li (2023). Another. Venue.\n\n## Claims\nShown [@smith2020], again [@smith2020]; [@li2023] too; [@ghost] is unknown.');
+    t('G5: numbered by first use, reuse stable, unknown flagged, refs slide auto-built',
+      rf.includes('<sup class="cite">[1]</sup>')
+      && (rf.match(/\[1\]/g) || []).length >= 2
+      && rf.includes('<sup class="cite">[2]</sup>')
+      && rf.includes('cite--bad">[?ghost]')
+      && rf.includes('id="references"')
+      && rf.indexOf('Smith et al.') < rf.indexOf('Li (2023).'));
+    const rf2 = C.w.buildDeck('title: T\nrefs:\n  a1: One.\n\n## X\n[@a1]\n\n## References\n- mine');
+    t('G5: a hand-written References slide suppresses the auto one',
+      (rf2.match(/id="references"/g) || []).length === 1 && rf2.includes('<li>mine</li>'));
+
+    /* ── G7: pacing budgets ── */
+    const pd = C.w.buildDeck('title: T\ntime: 10m\n\n# S\n## A @4m\n- x\n## B\n- y\n## C\n- z');
+    t('G7: @4m sticks, time: spreads the rest, titles are clean',
+      pd.includes('id="a" data-min="4"')
+      && pd.includes('id="b" data-min="3"') && pd.includes('id="c" data-min="3"')
+      && pd.includes('<h2>A</h2>'));
+    const vcp = new VirtualConsole(); vcp.on('jsdomError', () => {});
+    const PD = new JSDOM(pd, { runScripts: 'dangerously',
+      url: 'https://localhost/p.html#b', pretendToBeVisual: true, virtualConsole: vcp });
+    await tick(50);
+    const pvp = PD.window.Lectern._pv();
+    t('G7: presenter plan = cumulative budget at slide entry',
+      pvp.plan === 240 && pvp.planTot === 600 && pvp.slideMin === 3);
+
+    /* ── G8: URL media + lints ── */
+    const uDeck = C.w.buildDeck('title: T\n\n## Media\n![https://example.org/x.png | Remote]\n!video[https://example.org/v.mp4 | Clip]');
+    const li2 = C.w._lints();
+    t('G8: URL figure + !video render externally and lint; no asset tag',
+      uDeck.includes('<img src="https://example.org/x.png"')
+      && uDeck.includes('video data-src="https://example.org/v.mp4"')
+      && li2.length === 2 && /self-contained|自包含/.test(li2[0]));
+
+    /* ── H1: backup / appendix ── */
+    const bd = C.w.buildDeck('title: T\n\n# Main\n## A\n- x\n## B\n- y\n# Extra ::backup\n## Z\n- z');
+    t('H1: compose marks the appendix divider (no §-number, data-backup)',
+      /data-section="Extra" data-backup>/.test(bd)
+      && /data-section="Main" data-sn="1"/.test(bd)
+      && bd.includes('§ A'));
+    const vcb = new VirtualConsole(); vcb.on('jsdomError', () => {});
+    const BD = new JSDOM(bd, { runScripts: 'dangerously',
+      url: 'https://localhost/b.html#a', pretendToBeVisual: true, virtualConsole: vcb });
+    await tick(50);
+    const bw = BD.window, bdoc = bw.document;
+    const bkey = (k) => bw.dispatchEvent(new bw.KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
+    t('H1: main count excludes appendix; A-folios; agenda skips it, popover keeps it muted',
+      bdoc.querySelector('#cntTot').textContent === '05'
+      && bdoc.getElementById('extra').dataset.n === 'A1'
+      && bdoc.getElementById('end').dataset.n === 'A3'
+      && bdoc.querySelectorAll('#agenda .agenda a').length === 1
+      && bdoc.querySelectorAll('#toc a').length === 2
+      && !!bdoc.querySelector('#toc .toc__hr')
+      && !!bdoc.querySelector('#toc a.toc--bk'));
+    bkey('End');
+    const atEnd = bdoc.querySelector('.slide.is-current').id;
+    bkey('PageDown');
+    t('H1: End stops before the appendix; PgDn still enters it; presenter knows',
+      atEnd === 'b'
+      && bdoc.querySelector('.slide.is-current').id === 'extra'
+      && bw.Lectern._pv().backup === true);
+    C.w.buildDeck('title: T\n\n# X ::backup\n## a\n- 1\n# Y\n## b\n- 2');
+    t('H1: a normal section after ::backup lints',
+      C.w._lints().some((m) => /appendix|附录/.test(m)));
+    t('H1: pacing spreads over main slides only',
+      /id="a" data-min="4"/.test(C.w.buildDeck('title: T\ntime: 4m\n\n# M\n## A\n- x\n# B ::backup\n## Z\n- z'))
+      && !/id="z" data-min/.test(C.w.buildDeck('title: T\ntime: 4m\n\n# M\n## A\n- x\n# B ::backup\n## Z\n- z')));
+
+    /* ── H3: archiver ── */
+    C.w.setLang('en');
+    C.w.document.querySelector('#outline').value =
+      'title: T\n\n## Pics\n![https://ok.example/a.png | Good]\n![https://bad.example/b.png | Bad]';
+    C.w.buildDeck(C.w.document.querySelector('#outline').value);
+    const pngBytes = Uint8Array.from(atob(px.split(',')[1]), (c) => c.charCodeAt(0));
+    C.w._setFetch((u) => /ok\.example/.test(u)
+      ? Promise.resolve({ ok: true, blob: () => Promise.resolve(new C.w.Blob([pngBytes], { type: 'image/png' })) })
+      : Promise.resolve({ ok: false, status: 403 }));
+    const ares = await C.w._archive();
+    await tick(40);
+    const nv = C.w.document.querySelector('#outline').value;
+    t('H3: archive inlines the reachable image, leaves the CORS-blocked token, names it',
+      /!\[pic-\d+ \| Good\]/.test(nv)
+      && nv.includes('![https://bad.example/b.png | Bad]')
+      && ares.filter((r) => r.ok).length === 1 && ares.filter((r) => !r.ok).length === 1);
+
+    /* ── H4: math embed ── */
+    C.w._setFetch((u) => {
+      if (/\.css$/.test(u)) return Promise.resolve({ ok: true, text: () => Promise.resolve('@font-face{src:url(fonts/KaTeX_Main.woff2) format("woff2")} .katex{}') });
+      if (/\.js$/.test(u)) return Promise.resolve({ ok: true, text: () => Promise.resolve('window.katex={render:function(t,e){e.textContent="K"}}') });
+      return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new Uint8Array([1, 2, 3]).buffer) });
+    });
+    const mdeck = C.w.buildDeck('title: T\n\n## M\n$x$');
+    const emb = await C.w._embedMath(mdeck);
+    t('H4: embed inlines css + fonts (data-URI) + js, drops the CDN lines',
+      emb.ok && emb.fonts === 1
+      && !/https:[^"']*katex/.test(emb.deck)
+      && emb.deck.includes('data:font/woff2;base64,AQID')
+      && emb.deck.includes('window.katex='));
+    C.w._setFetch(() => Promise.resolve({ ok: false, status: 500 }));
+    const emb2 = await C.w._embedMath(mdeck);
+    t('H4: any fetch failure keeps the deck byte-identical with a reason',
+      emb2.ok === false && emb2.deck === mdeck && emb2.why.length > 0);
+
+    /* ── H5: raw .txt import; export is guarded ── */
+    const f5 = new C.w.File(['title: TXT\n\n## Only\n- ok'], 'o.txt', { type: 'text/plain' });
+    const impEl = C.w.document.querySelector('#imp');
+    Object.defineProperty(impEl, 'files', { configurable: true, value: [f5] });
+    impEl.dispatchEvent(new C.w.Event('change', { bubbles: true }));
+    await tick(60);
+    let expThrew = false;
+    try { C.w.document.querySelector('#exp').click(); } catch (e) { expThrew = true; }
+    t('H5: a raw .txt outline imports directly; export never throws',
+      C.w.document.querySelector('#outline').value.startsWith('title: TXT') && !expThrew);
+
+    /* ── H6: QR ── */
+    const q1 = C.w._qrSvg('https://example.org/talk');
+    const qd = C.w.buildDeck('title: T\nlink: https://example.org/talk\n\n## A\n- x');
+    t('H6: link: → deterministic inline-SVG QR + visible URL; absent otherwise',
+      q1.startsWith('<svg viewBox="0 0 ') && q1.includes('fill="currentColor"')
+      && C.w._qrSvg('https://example.org/talk') === q1
+      && qd.includes(q1) && qd.includes('>https://example.org/talk</p>')
+      && !C.w.buildDeck('title: T\n\n## A\n- x').includes('aria-label="QR code"'));
+
+    /* ── H9: theme key + select ── */
+    t('H9: theme: sets the initial attribute; absent by default',
+      C.w.buildDeck('title: T\ntheme: slate\n\n## A\n- x').includes('<html data-theme="slate" lang="en">')
+      && !/<html data-theme=/.test(C.w.buildDeck('title: T\n\n## A\n- x')));
+    C.w.document.querySelector('#outline').value = 'title: S\n\n## A\n- x';
+    const sel9 = C.w.document.querySelector('#thSel');
+    sel9.value = 'sepia';
+    sel9.dispatchEvent(new C.w.Event('change', { bubbles: true }));
+    t('H9: the select upserts the outline key through the undo-friendly path',
+      C.w.document.querySelector('#outline').value.split('\n')[1] === 'theme: sepia'
+      || C.w.document.querySelector('#outline').value.includes('theme: sepia'));
+
+    /* ── G9: ::fx directive ── */
+    t('G9: ::fx slide lands as data-fx on the section',
+      /id="a" data-fx="slide"/.test(C.w.buildDeck('title: T\n\n## A\n::fx slide\n- x')));
+  }
+
+  /* ── G0: strict render-proof gate (opt-in: SMOKE_STRICT=1) ── */
+  if (process.env.SMOKE_STRICT) {
+    const { execSync } = require('child_process');
+    const run = (f) => { try { execSync(`node render-proof.js ${f} --strict`, { stdio: 'pipe' }); return true; } catch (e) { return false; } };
+    t('G0 strict: every demo slide fits at real metrics', run(file));
+    if (fs.existsSync('starter.html')) t('G0 strict: starter fits', run('starter.html'));
   }
 
   console.log(fails === 0 ? '\nall green' : `\n${fails} failing`);

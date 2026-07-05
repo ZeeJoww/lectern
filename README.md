@@ -21,7 +21,7 @@ The lead line the room reads first.
 > speaker note (press N / feeds ?handout)
 ```
 
-`# section` · `## slide` · `- bullet` · `+ step` · `> note` · `![name | caption]` figure · `**bold**` `` `code` `` `$TeX$`. **Paste or drop an image** and Compose inserts it as a captioned figure (auto-downscaled). The live preview *is* your deck — click it and present — and it warns, while you type, if any slide outgrows the canvas. **Import deck** re-opens a downloaded file, recovering outline *and* images. The EN ⇄ 中文 button localises the composer; add `lang: zh` to the outline for a Chinese deck (议程, 问答与讨论, CJK deep links).
+`# section` · `## slide @4m` · `- bullet` · `+ step` · `> note` · `![name | caption | fill]` figure · `|` alone = two columns · `|a|b|` tables · `[@key]` citations with a `refs:` block · `!video[url]` · `time: 25m` pacing · `::compact` · `::fx slide` · `# Appendix ::backup` · `link:` → QR on the end slide · `theme: slate` · `**bold**` `` `code` `` `$TeX$`. **Paste or drop an image** and Compose inserts it as a captioned figure (auto-downscaled). The live preview *is* your deck — click it and present — and it warns, while you type, if any slide outgrows the canvas. **Import deck** re-opens a downloaded file, recovering outline *and* images. The EN ⇄ 中文 button localises the composer; add `lang: zh` to the outline for a Chinese deck (议程, 问答与讨论, CJK deep links).
 
 ## Quick start (HTML path)
 
@@ -41,6 +41,8 @@ The lead line the room reads first.
 | `F` | fullscreen | `L` `I` `C` | laser · ink (Shift = red) · clear |
 | `N` | speaker notes | `T` | theme: paper → slate → sepia |
 | `Esc` | close popups / overview | `D` | author aid — flags overflowing slides |
+
+In overview, arrows move a selection ring (↑↓ by row) and `Enter` jumps. The presenter adds **● rec** — record a rehearsal and get per-slide dwell vs plan, kept locally (last 3 runs).
 
 ## Author
 
@@ -64,13 +66,18 @@ Send the file · link a slide by `#id` · print to PDF (`Ctrl/Cmd+P`, pages pre-
 | `compose.html` | Type a plain-text outline → download a finished deck. Live preview + overflow warnings. |
 | `starter.html` | Blank 5-slide skeleton for those who prefer editing HTML directly. |
 | `LECTERN-SPEC.md` | Contracts: invariants, pixel budgets, feature specs. Read §1–§6 before editing. |
+| `LECTERN-ROADMAP-2.md` | Roadmap 2 (G0–G9) — complete; kept for its design record. |
+| `LECTERN-ROADMAP-3.md` | Current plan (H0–H9): rehearsal loop, longevity, overview keyboard, tooling. |
 | `LECTERN-DEVNOTES.md` | Living changelog — decisions with their *why*, per release. |
-| `smoke.test.js` | 48 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
-| `render-proof.js` | Optional: snapshot the executed DOM for WeasyPrint → PDF page proofs (structure, not pixels). |
+| `smoke.test.js` | 94 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
+| `render-proof.js` | Headless proofs: structural snapshot, or `--strict` per-slide overflow truth at real font metrics. |
+| `a11y.test.js` | Accessibility gate: axe-core over all four surfaces + token contrast table. |
+| `vendor-qrcode.js` | Pinned MIT QR encoder (build-time only; decks receive an inline SVG). |
+| `MANUAL-QA.md` | The scripted ~5-minute human pass for what headless tools cannot see. |
 | `build-compose.py` | Regenerates `compose.html` after deck changes (embeds the shell as base64). |
 
 ## Extend
 
 `window.Lectern` exposes `go(n) · next() · prev() · overview() · presenter() · math(i) · check() · state() · on(event, fn) / off`. Events: `"slide" {i, id, el, frag, frags}` (plus `step:true` for in-slide reveals) and `"overview" {on}`. Every change should keep the smoke test green and land with a devnotes entry.
 
-*Release v2.4 — see `LECTERN-DEVNOTES.md` for history.*
+*Release v2.24 — Roadmaps 1–3 complete. History in `LECTERN-DEVNOTES.md`.*

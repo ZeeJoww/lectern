@@ -40,7 +40,7 @@
          presenter() · math(i) · check() · state() · on(event,fn) → fn ·
          off(event,fn). Events: "slide" {i,id,el,frag,frags}
          (+ step:true for in-slide reveals); "overview" {on}.
-  Build v2.4 — change log ships alongside as LECTERN-DEVNOTES.md.
+  Build v2.21 — change log ships alongside as LECTERN-DEVNOTES.md.
   The Google Fonts <link> is optional — remove it and the deck
   falls back to Georgia / system fonts, fully offline.
   ────────────────────────────────────────────────────────────────────
@@ -122,6 +122,8 @@ b,strong{font-weight:600}
   visibility:hidden;opacity:0;transform:translateY(10px);
   transition:opacity .24s ease,transform .24s ease,visibility 0s linear .24s}
 .slide.is-current{visibility:visible;opacity:1;transform:none;transition:opacity .24s ease,transform .24s ease}
+.slide[data-fx="slide"]{transform:translateX(28px)}
+.slide[data-fx="none"],.slide[data-fx="none"].is-current{transition:none}
 @media (prefers-reduced-motion:reduce){.slide,.progress i,.frag,.toc,.find,.toast,#veil{transition:none!important}}
 
 .slide h2{font:600 45px/1.16 var(--serif);letter-spacing:-.01em;margin:0 0 26px;max-width:1050px;text-wrap:balance}
@@ -305,6 +307,22 @@ body.laser-on .stage{cursor:crosshair}
 
 .is-overview .toc,.is-overview .find,.is-overview .toast,.is-overview #ink{display:none!important}
 
+/* ── overview keyboard (H0) ──────────────────────────────────── */
+.is-overview .slide.is-sel{outline:3px solid var(--lapis);outline-offset:2px}
+
+/* ── section popover: appendix rows (H1) ─────────────────────── */
+.toc__hr{display:block;height:1px;background:var(--rule);margin:6px 8px}
+.toc a.toc--bk{opacity:.65}
+
+/* ── citations & references (G5) ─────────────────────────────── */
+sup.cite{font:600 .62em var(--sans);color:var(--lapis);letter-spacing:.02em}
+sup.cite--bad{color:var(--rubric)}
+ol.refs{margin:8px 0 0;padding-left:30px;font-size:19px;line-height:1.55}
+ol.refs li{margin-bottom:10px;break-inside:avoid;padding-left:4px}
+
+/* ── screen-reader announcer (G6) ────────────────────────────── */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
 /* ── author aid (press D): flag slides that overflow the canvas ── */
 @media screen{
   .ovfbadge{position:absolute;right:16px;bottom:calc(var(--foot) + 12px);z-index:9;display:none;background:var(--rubric);color:#fff;border-radius:7px;padding:6px 11px;font:600 12.5px var(--mono);letter-spacing:.02em;box-shadow:0 2px 10px rgba(22,27,34,.18)}
@@ -336,6 +354,7 @@ body.laser-on .stage{cursor:crosshair}
   .slide::before{content:attr(data-runhead);position:absolute;top:24px;right:var(--pad);font:600 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
   .slide::after{content:attr(data-n) " / " attr(data-tot);position:absolute;bottom:22px;right:var(--pad);font:500 12px var(--mono);color:var(--ink-2)}
   .frag{visibility:visible!important;opacity:1!important;transform:none!important}
+  .slide{transform:none!important}
   :root,html[data-theme]{--paper:#FFFFFF;--ink:#161B22;--ink-2:#5A6373;--lapis:#1E3D6B;--lapis-soft:#EDF2F8;--lapis-2:#B9C6DA;--rubric:#A62B3A;--rule:#DCE0E6;--rule-strong:#9AA3AF;--wash:#F6F8FA}
   body.handout .hand{display:block;position:relative;width:var(--W);height:var(--H);page-break-after:always;break-after:page;padding:96px 120px;background:var(--paper)}
   body.handout .hand__head{font:600 34px/1.2 var(--serif);color:var(--ink);padding-bottom:14px;border-bottom:2px solid var(--rule-strong);margin-bottom:22px}
@@ -536,12 +555,11 @@ body.laser-on .stage{cursor:crosshair}
             <pre class="code"><code>&lt;figure class="frame frame--fill"&gt;
   &lt;figcaption class="frame__bar"&gt;…&lt;/figcaption&gt;
   &lt;iframe data-src="https://example.org"&gt;&lt;/iframe&gt;
-&lt;/figure&gt;
-&lt;!-- fixed aspect instead: style="--ratio:16/10" --&gt;</code></pre>
+&lt;/figure&gt;</code></pre>
             <ul style="margin-top:20px">
-              <li><code>data-src</code> loads lazily, one slide ahead — heavy demos never slow the deck.</li>
-              <li><code>frame--fill</code> stretches to match its column; <code>--ratio</code> pins an aspect instead.</li>
-              <li>The caption bar states provenance; add <code>sandbox</code> for untrusted sources.</li>
+              <li><code>data-src</code> loads lazily, one slide ahead — demos never slow the deck.</li>
+              <li><code>frame--fill</code> matches the column; <code>--ratio</code> pins an aspect.</li>
+              <li>The bar states provenance; add <code>sandbox</code> for untrusted pages.</li>
             </ul>
           </div>
         </div>
@@ -584,12 +602,11 @@ body.laser-on .stage{cursor:crosshair}
             <pre class="code"><code>&lt;figure class="frame frame--fill"&gt;
   &lt;figcaption class="frame__bar"&gt;…&lt;/figcaption&gt;
   &lt;template data-page&gt;
-    &lt;style&gt;/* page-scoped css */&lt;/style&gt;
-    &lt;script&gt;/* page-scoped js */&lt;/script&gt;
+    &lt;style&gt;…&lt;/style&gt; &lt;script&gt;…&lt;/script&gt;
   &lt;/template&gt;
 &lt;/figure&gt;</code></pre>
             <ul style="margin-top:20px">
-              <li>Deck styles never bleed in — note the dark page inside a white deck.</li>
+              <li>Deck styles never bleed in — a dark page inside a white deck.</li>
               <li>No URL, no server — it travels in the file.</li>
             </ul>
           </div>
@@ -617,10 +634,10 @@ body.laser-on .stage{cursor:crosshair}
         <div class="cols">
           <div>
             <ul>
-              <li><b>One file.</b> Attach it, email it, drop it on any static host.</li>
+              <li><b>One file.</b> Email it or host it anywhere.</li>
               <li><b>Deep links.</b> Every slide id is an address: <code>deck.html#frames</code>.</li>
-              <li><b>PDF.</b> Print with <kbd>Ctrl</kbd>+<kbd>P</kbd> — pages are pre-sized at 1280 × 720, with running heads and folios.</li>
-              <li><b>Embeddable.</b> The deck itself sits happily in a frame:</li>
+              <li><b>PDF.</b> <kbd>Ctrl</kbd>+<kbd>P</kbd> — pre-sized pages, running heads, folios.</li>
+              <li><b>Embeddable.</b> It sits happily in a frame:</li>
             </ul>
             <pre class="code"><code>&lt;iframe src="deck.html#tokens"
         width="960" height="540"&gt;&lt;/iframe&gt;</code></pre>
@@ -656,6 +673,7 @@ body.laser-on .stage{cursor:crosshair}
     <div class="ovfbadge" id="ovf" aria-hidden="true"></div>
     <canvas id="ink" width="1280" height="720" aria-hidden="true"></canvas>
     <div class="toast" id="toast" aria-hidden="true"></div>
+    <div class="sr" id="announce" aria-live="polite"></div>
 
     <footer class="chrome chrome--foot">
       <span class="foot__id"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span id="byline"></span></span>
@@ -689,16 +707,32 @@ var deck=$('#deck'),stage=$('#stage'),slidesEl=$('#slides');
 var slides=Array.prototype.slice.call(document.querySelectorAll('.slide'));
 var N=slides.length,cur=-1,ovOn=false;
 
+/* backups (H1): everything from the first ::backup section on is
+   appendix — outside the count, the bar, End, and the agenda */
+var Nmain=N;
+slides.some(function(sl,k){if(sl.hasAttribute('data-backup')){Nmain=k;return true;}});
+
+/* pacing (G7): optional per-slide minute budgets via data-min */
+var MINS=slides.map(function(sl){return +(sl.dataset.min||0);});
+var CUM=[],accM=0;
+slides.forEach(function(_,k){CUM[k]=accM;accM+=MINS[k];});
+var PLANNED=accM>0;
+
 $('#deckShort').textContent=DECK.shortTitle;
 $('#byline').textContent=DECK.byline;
-$('#cntTot').textContent=String(N).padStart(2,'0');
+$('#cntTot').textContent=String(Nmain).padStart(2,'0');
 
 /* ids, running heads, print attributes */
 var SECTIONS=[];
-var sec={n:'',t:''};
+var sec={n:'',t:''},bkFlag=false;
 slides.forEach(function(s,i){
   if(!s.id)s.id='s'+(i+1);
-  if(s.dataset.section){sec={n:s.dataset.sn||'',t:s.dataset.section};SECTIONS.push({n:sec.n,t:sec.t,i:i});}
+  if(s.dataset.section){
+    if('backup' in s.dataset)bkFlag=true;
+    sec={n:s.dataset.sn||'',t:s.dataset.section};
+    SECTIONS.push({n:sec.n,t:sec.t,i:i,bk:bkFlag});
+  }
+  if(bkFlag)s.dataset.backup='1';
   s.dataset.runhead=sec.t?((sec.n?'§'+sec.n+' · ':'')+sec.t):'';
   s.dataset.n=String(i+1).padStart(2,'0');
   s.dataset.tot=String(N).padStart(2,'0');
@@ -706,6 +740,12 @@ slides.forEach(function(s,i){
   s.setAttribute('aria-roledescription','slide');
   s.setAttribute('aria-label',(i+1)+' of '+N);
   s.setAttribute('aria-hidden','true');
+});
+
+/* backups (H1): re-folio after the metadata pass numbered everything */
+slides.forEach(function(sl,k){
+  sl.dataset.tot=String(Nmain).padStart(2,'0');
+  if(k>=Nmain)sl.dataset.n='A'+(k-Nmain+1);
 });
 
 /* fit the design canvas (--W × --H) to the window */
@@ -819,9 +859,15 @@ function applyFrag(i,mode){setFrag(i,mode==='none'?-1:fragSteps[i].length-1,fals
 function pbarUp(){
   if(cur<0)return;
   var f=(frag[cur]+2)/(fragSteps[cur].length+1);
-  $('#pbar').style.width=(((cur+f)/N)*100)+'%';
+  $('#pbar').style.width=(Math.min(1,(cur+f)/Nmain)*100)+'%';
 }
 
+function setInert(){
+  slides.forEach(function(sl,k){
+    if(ovOn||k===cur)sl.removeAttribute('inert');
+    else sl.setAttribute('inert','');
+  });
+}
 function go(i,fromHash){
   i=Math.max(0,Math.min(N-1,i));
   if(i===cur)return;
@@ -839,6 +885,7 @@ function go(i,fromHash){
   $('#cntCur').textContent=s.dataset.n;
   $('#runSection').textContent=s.dataset.runhead;
   pbarUp();
+  setInert();
   if(dev)audit();
   load(i-1);load(i);load(i+1);
   var h='#'+s.id;
@@ -869,10 +916,34 @@ $('#btnNext').addEventListener('click',next);
 $('#btnPrev').addEventListener('click',prev);
 
 /* overview */
+var ovSel=0;
+function setSel(k){
+  k=Math.max(0,Math.min(N-1,k));
+  if(slides[ovSel])slides[ovSel].classList.remove('is-sel');
+  ovSel=k;
+  var s=slides[k];
+  s.classList.add('is-sel');
+  try{s.scrollIntoView({block:'nearest'});}catch(e){}
+  var h=s.querySelector('h1,h2');
+  ann.textContent=s.dataset.n+' / '+String(Nmain).padStart(2,'0')+' · '+((h&&h.textContent.trim())||s.id);
+}
+function selRow(dir){
+  var c=slides[ovSel],y0=c.offsetTop,x0=c.offsetLeft,best=-1,bd=1e9;
+  slides.forEach(function(sl,k){
+    var dy=sl.offsetTop-y0;
+    if(dir>0?dy>2:dy<-2){
+      var d=Math.abs(dy)*10000+Math.abs(sl.offsetLeft-x0);
+      if(d<bd){bd=d;best=k;}
+    }
+  });
+  setSel(best>-1?best:ovSel+dir); /* flat geometry (jsdom) falls back to ±1 */
+}
 function overview(state){
   ovOn=(state===undefined)?!ovOn:state;
   deck.classList.toggle('is-overview',ovOn);
-  if(!ovOn)fit();
+  setInert();
+  if(ovOn)setSel(cur);
+  else{if(slides[ovSel])slides[ovSel].classList.remove('is-sel');fit();}
   emit('overview',{on:ovOn});
 }
 slidesEl.addEventListener('click',function(e){
@@ -902,9 +973,10 @@ var tocEl=$('#toc'),secBtn=$('#runSection'),tocOn=false;
   var ag=document.querySelector('.slide[data-agenda] .agenda');
   SECTIONS.forEach(function(k,j){
     var end=SECTIONS[j+1]?SECTIONS[j+1].i:N,count=end-k.i;
-    var row='<span class="ag__no">§ '+esc(String(k.n).padStart(2,'0'))+'</span><span class="ag__t">'+esc(k.t)+'</span><span class="ag__n">'+count+' slide'+(count>1?'s':'')+'</span>';
-    if(ag){var a=document.createElement('a');a.className='ag';a.href='#'+slides[k.i].id;a.innerHTML=row;ag.appendChild(a);}
-    var t=document.createElement('a');t.href='#'+slides[k.i].id;t.innerHTML=row;tocEl.appendChild(t);
+    var row='<span class="ag__no">§ '+esc(k.bk?'A':String(k.n).padStart(2,'0'))+'</span><span class="ag__t">'+esc(k.t)+'</span><span class="ag__n">'+count+' slide'+(count>1?'s':'')+'</span>';
+    if(ag&&!k.bk){var a=document.createElement('a');a.className='ag';a.href='#'+slides[k.i].id;a.innerHTML=row;ag.appendChild(a);}
+    if(k.bk&&!tocEl.querySelector('.toc__hr')){var hr=document.createElement('i');hr.className='toc__hr';tocEl.appendChild(hr);}
+    var t=document.createElement('a');t.href='#'+slides[k.i].id;if(k.bk)t.className='toc--bk';t.innerHTML=row;tocEl.appendChild(t);
   });
 })();
 function toc(state){
@@ -912,11 +984,24 @@ function toc(state){
   tocEl.classList.toggle('is-open',tocOn);
   tocEl.setAttribute('aria-hidden',tocOn?'false':'true');
   secBtn.setAttribute('aria-expanded',tocOn?'true':'false');
+  if(tocOn){var a0=tocEl.querySelector('a');if(a0)a0.focus();}
 }
 secBtn.addEventListener('click',function(){toc();});
 tocEl.addEventListener('click',function(e){if(e.target.closest('a'))toc(false);});
 document.addEventListener('click',function(e){
   if(tocOn&&!e.target.closest('#toc')&&!e.target.closest('#runSection'))toc(false);
+});
+tocEl.addEventListener('keydown',function(e){
+  var as=Array.prototype.slice.call(tocEl.querySelectorAll('a'));
+  var k=as.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){e.preventDefault();(as[k+1]||as[0]).focus();}
+  else if(e.key==='ArrowUp'){e.preventDefault();(as[k-1]||as[as.length-1]).focus();}
+  else if(e.key==='Escape'){e.preventDefault();toc(false);secBtn.focus();}
+});
+var ann=$('#announce');
+on('slide',function(d){
+  var h=d.el.querySelector('h1,h2');
+  ann.textContent=d.el.dataset.n+' / '+String(N).padStart(2,'0')+' · '+((h&&h.textContent.trim())||d.id);
 });
 
 /* ── search (F5): press / ───────────────────────────────────── */
@@ -964,6 +1049,7 @@ findIn.addEventListener('keydown',function(e){
   else if(e.key==='ArrowUp'){e.preventDefault();findMove(-1);}
   else if(e.key==='Enter'){e.preventDefault();var h=findHits[findSel];if(h){closeFind();go(h.i);}}
   else if(e.key==='Escape'){e.preventDefault();closeFind();}
+  else if(e.key==='Tab'){e.preventDefault();}
 });
 findRs.addEventListener('mousedown',function(e){
   var li=e.target.closest('li[data-i]');
@@ -980,6 +1066,18 @@ function state(){
     sections:SECTIONS.map(function(k){return{n:k.n,t:k.t,id:slides[k.i].id};})
   };
 }
+function report(marks,endMs){
+  if(!marks||!marks.length)return '';
+  function mm(v){v=Math.max(0,Math.round(v/1000));return Math.floor(v/60)+':'+String(v%60).padStart(2,'0');}
+  var out=[],tot=0,ptot=0;
+  marks.forEach(function(mk,k){
+    var dur=((k+1<marks.length)?marks[k+1].ms:endMs)-mk.ms;tot+=dur;
+    var plan=mk.plan?mk.plan*60000:0;ptot+=plan;
+    out.push(mk.n+'  #'+mk.id+'  '+mm(dur)+(plan?('  / plan '+mm(plan)+'  '+(dur>=plan?'+':'−')+mm(Math.abs(dur-plan))):''));
+  });
+  out.push('total  '+mm(tot)+(ptot?('  / plan '+mm(ptot)):''));
+  return out.join('\n');
+}
 function pvData(){
   var sl=slides[cur],nx=slides[cur+1];
   var h=sl.querySelector('h1,h2'),nt=sl.querySelector('.notes');
@@ -989,7 +1087,15 @@ function pvData(){
     title:(h?h.textContent:sl.id).trim(),
     notes:nt?nt.innerHTML:'<p>—</p>',
     next:nx?((nh?nh.textContent:nx.id).trim()):'— end of deck —',
-    frag:frag[cur]+1,frags:fragSteps[cur].length
+    frag:frag[cur]+1,frags:fragSteps[cur].length,
+    nextStep:(fragSteps[cur].length&&frag[cur]<fragSteps[cur].length-1)
+      ?{k:frag[cur]+2,K:fragSteps[cur].length,
+        text:(fragSteps[cur][frag[cur]+1][0].textContent||'').trim().replace(/\s+/g,' ').slice(0,60)}
+      :null,
+    backup:!!sl.dataset.backup,
+    plan:PLANNED?Math.round(CUM[cur]*60):null,
+    slideMin:PLANNED?MINS[cur]:null,
+    planTot:PLANNED?Math.round(accM*60):null
   };
 }
 function pvTpl(){
@@ -1001,6 +1107,8 @@ function pvTpl(){
   '.bar{grid-column:1/-1;display:flex;align-items:baseline;gap:22px}',
   '.clock,.timer{font:600 34px/1 "JetBrains Mono",monospace}.timer{color:#82A9DC}.clock{margin-left:auto;color:#98A4B5}',
   'button{background:#1B2634;border:1px solid #46536A;color:#E7ECF3;border-radius:7px;padding:7px 13px;font:600 13px monospace;cursor:pointer}',
+  '.pace{font:600 13px monospace;color:#98A4B5;margin-left:4px}.pace.b{color:#E08B96}',
+  '.rep{font:12px/1.6 "JetBrains Mono",monospace;white-space:pre;color:#98A4B5;margin:14px 0 8px;display:none}.rep.on{display:block}#repCp{display:none}',
   '.pane{background:#0E1218;border:1px solid #232B37;border-radius:12px;padding:16px;overflow:auto;min-height:0}',
   '.prev iframe{width:100%;aspect-ratio:16/9;border:1px solid #232B37;border-radius:8px;background:#fff}',
   '.prev .nx{opacity:.75;margin-top:12px}.prev .nx iframe{width:62%}',
@@ -1010,20 +1118,36 @@ function pvTpl(){
   '</style></head><body>',
   '<div class="bar"><h1>'+esc(DECK.shortTitle)+' · presenter</h1>',
   '<span class="timer" id="tm">00:00</span>',
-  '<button id="tSt">start</button><button id="tRe">reset</button>',
+  '<button id="tSt">start</button><button id="tRe">reset</button><button id="tRec">● rec</button>',
+  '<span class="pace" id="pc"></span>',
   '<button id="bP">‹</button><button id="bN">›</button>',
   '<span class="clock" id="ck"></span></div>',
   '<div class="pane prev"><div class="sub" id="pos"></div><iframe id="f1" tabindex="-1"></iframe>',
   '<div class="nx"><div class="sub">next: <span id="nxt"></span></div><iframe id="f2" tabindex="-1"></iframe></div></div>',
-  '<div class="pane"><div class="meta" id="ti"></div><div class="sub" id="fg"></div><div class="notes" id="no"></div></div>',
+  '<div class="pane"><div class="meta" id="ti"></div><div class="sub" id="fg"></div><div class="notes" id="no"></div><pre class="rep" id="rep"></pre><button id="repCp">copy report</button></div>',
   '<scr'+'ipt>',
-  'var base='+JSON.stringify(base)+',O=window.opener;',
+  'var base='+JSON.stringify(base)+',O=window.opener,RUNKEY='+JSON.stringify('lectern-runs:'+DECK.shortTitle)+';',
+  'var recOn=false,marks=null;',
   'function $(q){return document.querySelector(q);}',
-  'var t0=null,acc=0;',
+  'var t0=null,acc=0,D=null;',
   'function mm(v){v=Math.floor(v/1000);return String(Math.floor(v/60)).padStart(2,"0")+":"+String(v%60).padStart(2,"0");}',
-  'setInterval(function(){$("#tm").textContent=mm(acc+(t0?Date.now()-t0:0));$("#ck").textContent=new Date().toLocaleTimeString();},250);',
+  'setInterval(function(){$("#tm").textContent=mm(acc+(t0?Date.now()-t0:0));$("#ck").textContent=new Date().toLocaleTimeString();pace();},250);',
   '$("#tSt").onclick=function(){if(t0){acc+=Date.now()-t0;t0=null;this.textContent="start";}else{t0=Date.now();this.textContent="pause";}};',
   '$("#tRe").onclick=function(){t0=t0?Date.now():null;acc=0;};',
+  'function finish(){',
+  ' var rep="";try{rep=O.Lectern._report(marks,Date.now());}catch(e){}',
+  ' try{var arr=JSON.parse(localStorage.getItem(RUNKEY)||"[]");arr.unshift({at:Date.now(),marks:marks});localStorage.setItem(RUNKEY,JSON.stringify(arr.slice(0,3)));}catch(e){}',
+  ' var el=$("#rep");el.textContent=rep;el.className="rep on";$("#repCp").style.display="inline-block";',
+  '}',
+  '$("#tRec").onclick=function(){',
+  ' if(!recOn){recOn=true;marks=D?[{n:D.n,id:D.id,plan:D.slideMin,ms:Date.now()}]:[];this.textContent="■ stop";}',
+  ' else{recOn=false;this.textContent="● rec";finish();}',
+  '};',
+  '$("#repCp").onclick=function(){try{var r=document.createRange();r.selectNodeContents($("#rep"));var s2=getSelection();s2.removeAllRanges();s2.addRange(r);document.execCommand("copy");s2.removeAllRanges();}catch(e){}};',
+  'function pace(){var el=$("#pc");if(!D||D.plan==null){el.textContent="";return;}',
+  ' var e=(acc+(t0?Date.now()-t0:0))/1000,d=e-D.plan;',
+  ' el.textContent="plan "+mm(D.plan*1000)+" \u00b7 "+(d>=0?"+":"\u2212")+mm(Math.abs(d)*1000)+(d>=0?" behind":" ahead");',
+  ' el.className="pace"+(d>120?" b":"");}',
   '$("#bN").onclick=function(){try{O.Lectern.next();}catch(e){}};',
   '$("#bP").onclick=function(){try{O.Lectern.prev();}catch(e){}};',
   'window.addEventListener("keydown",function(e){',
@@ -1031,9 +1155,11 @@ function pvTpl(){
   ' if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();try{O.Lectern.prev();}catch(x){}}',
   '});',
   'function ret(f,id){if(!id){f.style.visibility="hidden";return;}f.style.visibility="visible";try{f.contentWindow.location.hash="#"+id;}catch(e){f.src=base+"#"+id;}}',
-  'window.render=function(d){',
-  ' $("#pos").textContent=d.n+" / "+String(d.tot).padStart(2,"0")+" · #"+d.id;',
-  ' $("#ti").textContent=d.title;$("#nxt").textContent=d.next;',
+  'window.render=function(d){D=d;pace();',
+  ' if(recOn&&(!marks.length||marks[marks.length-1].id!==d.id))marks.push({n:d.n,id:d.id,plan:d.slideMin,ms:Date.now()});',
+  ' $("#pos").textContent=d.n+" / "+String(d.tot).padStart(2,"0")+" · #"+d.id+(d.backup?" · appendix":"");',
+  ' $("#ti").textContent=d.title;',
+  ' $("#nxt").textContent=d.nextStep?("step "+d.nextStep.k+" / "+d.nextStep.K+" — "+d.nextStep.text):d.next;',
   ' $("#fg").textContent=d.frags?("step "+d.frag+" of "+d.frags):"";',
   ' $("#no").innerHTML=d.notes;ret($("#f1"),d.id);ret($("#f2"),d.nextId);',
   '};',
@@ -1154,18 +1280,25 @@ window.addEventListener('keydown',function(e){
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   var t=e.target;
   if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return;
+  if(t&&t.closest&&t.closest('#toc'))return;
   if(document.body.classList.contains('blackout-on')&&e.key!=='b'&&e.key!=='B'){
     document.body.classList.remove('blackout-on');
   }
   switch(e.key){
-    case'ArrowRight':case'ArrowDown':case' ':
-      e.preventDefault();if(!ovOn)next();break;
-    case'ArrowLeft':case'ArrowUp':
-      e.preventDefault();if(!ovOn)prev();break;
+    case'ArrowRight':e.preventDefault();if(ovOn)setSel(ovSel+1);else next();break;
+    case'ArrowLeft':e.preventDefault();if(ovOn)setSel(ovSel-1);else prev();break;
+    case'ArrowDown':e.preventDefault();if(ovOn)selRow(1);else next();break;
+    case'ArrowUp':e.preventDefault();if(ovOn)selRow(-1);else prev();break;
+    case' ':e.preventDefault();if(!ovOn)next();break;
+    case'Enter':
+      if(ovOn&&!(t&&t.closest&&t.closest('button,a'))){
+        e.preventDefault();var oS=ovSel;overview(false);go(oS);
+      }
+      break;
     case'PageDown':e.preventDefault();if(!ovOn)nextSlide();break;
     case'PageUp':e.preventDefault();if(!ovOn)prevSlide();break;
-    case'Home':e.preventDefault();go(0);break;
-    case'End':e.preventDefault();go(N-1);break;
+    case'Home':e.preventDefault();if(ovOn)setSel(0);else go(0);break;
+    case'End':e.preventDefault();if(ovOn)setSel(N-1);else go(Nmain-1);break;
     case'o':case'O':closeFind();toc(false);overview();break;
     case'Escape':
       if(document.body.classList.contains('find-on'))closeFind();
@@ -1205,7 +1338,7 @@ window.addEventListener('pointerup',function(e){
 });
 
 /* tiny public api */
-window.Lectern={go:function(n){go(n-1);},next:next,prev:prev,overview:overview,check:measure,on:on,off:off,presenter:openPresenter,math:math,state:state,_pv:pvData};
+window.Lectern={go:function(n){go(n-1);},next:next,prev:prev,overview:overview,check:measure,on:on,off:off,presenter:openPresenter,math:math,state:state,_pv:pvData,_report:report};
 
 go(idx());
 })();
