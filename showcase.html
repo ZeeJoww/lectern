@@ -40,7 +40,7 @@
          presenter() · math(i) · check() · state() · on(event,fn) → fn ·
          off(event,fn). Events: "slide" {i,id,el,frag,frags}
          (+ step:true for in-slide reveals); "overview" {on}.
-  Build v2.25 — change log ships alongside as LECTERN-DEVNOTES.md.
+  Build v2.21 — change log ships alongside as LECTERN-DEVNOTES.md.
   The Google Fonts <link> is optional — remove it and the deck
   falls back to Georgia / system fonts, fully offline.
   ────────────────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Lectern — a single-file, academic HTML slide system.">
-<title>Your Talk Title</title>
+<title>Lectern, End to End</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -268,12 +268,8 @@ body.blackout-on #veil{opacity:1;visibility:visible;transition:opacity .15s ease
 .math[data-mathed]{background:none;border:0;padding:1px 0;white-space:normal}
 .math--eq[data-mathed]{padding-right:76px}
 
-/* ── agenda + section popover (F4; scales per H-probe) ──────── */
+/* ── agenda + section popover (F4) ──────────────────────────── */
 .agenda{margin-top:10px;border-top:2px solid var(--rule-strong)}
-.agenda--dense .ag{padding:11px 2px}
-.agenda--dense .ag__t{font-size:23px}
-.agenda--cols{columns:2;column-gap:56px}
-.agenda--cols .ag{break-inside:avoid}
 .ag{display:flex;align-items:baseline;gap:26px;padding:19px 2px;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .ag:hover{background:var(--lapis-soft)}
 .ag__no{font:600 15px var(--mono);letter-spacing:.08em;color:var(--lapis);width:64px;flex:none}
@@ -397,52 +393,73 @@ ol.refs li{margin-bottom:10px;break-inside:avoid;padding-left:4px}
     </div>
 
     <div class="slides" id="slides">
-
-      <!-- 01 · title — edit every line ·············································· -->
-      <section class="slide slide--title" id="title">
-        <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
-        <h1>Your Talk Title</h1>
-        <p class="subtitle">One line that says what this talk claims</p>
-        <p class="authors">F.&nbsp;Lastname<sup>1</sup> · C.&nbsp;Oauthor<sup>2</sup></p>
-        <p class="affil"><sup>1</sup>&nbsp;Your Institute &nbsp;&nbsp; <sup>2</sup>&nbsp;Their Institute</p>
-        <p class="venue">Venue or Seminar Series<i>·</i>Month 2026</p>
-        <div class="titlepills"><span class="pill">preprint 0000.00000</span><span class="pill">draft</span></div>
+<section class="slide slide--title" id="title">
+      <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
+      <h1>Lectern, End to End</h1>
+      <p class="subtitle">Every construct of the outline language, on one deck</p>
+      <p class="authors">The Lectern Project</p>
+      <p class="venue">Showcase · 2026</p>
       </section>
-
-      <!-- 02 · agenda — fills itself from your data-section slides ·················· -->
       <section class="slide" id="agenda" data-agenda>
-        <header><p class="kicker">Contents</p><h2>Agenda</h2></header>
-        <nav class="agenda" aria-label="Sections"></nav>
-        <aside class="notes">This page rebuilds itself when you add or remove data-section slides.</aside>
+      <header><p class="kicker">Contents</p><h2>Agenda</h2></header>
+      <nav class="agenda" aria-label="Sections"></nav></section>
+      <section class="slide slide--section" id="the-language" data-section="The Language" data-sn="1">
+      <p class="sec__no">§ 01</p>
+      <h2>The Language</h2>
+      <p class="sec__sub">Plain text in, a finished deck out — this file is its own tutorial.</p>
       </section>
-
-      <!-- 03 · section divider — copy one per part ·································· -->
-      <section class="slide slide--section" id="part-1" data-section="Part One" data-sn="1">
-        <p class="sec__no">§ 01</p>
-        <h2>Part One</h2>
-        <p class="sec__sub">A sentence on what this part establishes and why the room should care.</p>
+      <section class="slide" id="paragraphs-and-emphasis" data-min="2">
+      <header><p class="kicker">The Language</p><h2>Paragraphs and emphasis</h2></header>
+      <p class="lead">The first line of a slide is its lead — the room reads it before you speak.</p>
+        <p>Later lines are body paragraphs. Inline you get <b>bold</b>, <i>italic</i>, <code>code</code>,</p>
+        <p>mathematics like <span class="math">e^{i\pi}+1=0</span>, and citations such as <sup class="cite">[1]</sup>.</p>
+      <aside class="notes">Speaker notes live on N and feed the ?handout print.</aside>
       </section>
-
-      <!-- 04 · content — duplicate this for most slides ····························· -->
-      <section class="slide" id="first-claim">
-        <header><p class="kicker">Part One<i>·</i>Topic</p><h2>A claim stated as a sentence</h2></header>
-        <p class="lead">Open with the takeaway, not the setup — the room reads this line first.</p>
-        <ul>
-          <li>Evidence or reasoning the claim rests on.</li>
-          <li class="frag">A step revealed on <kbd>→</kbd> — delete <code>class="frag"</code> if you want it static.</li>
-          <li class="frag">Inline math works anywhere: <span class="math">\hat{y}=f_\theta(x)</span>.</li>
-        </ul>
-        <aside class="notes">Speaker notes: press N to preview; they also become the ?handout pages.</aside>
+      <section class="slide" id="steps-reveal-on-the-arrow-key" data-min="2.33">
+      <header><p class="kicker">The Language</p><h2>Steps reveal on the arrow key</h2></header>
+      <ul><li>A plain bullet is always visible.</li><li class="frag">A <code>+</code> bullet appears when you press →.</li><li class="frag frag--dim">A <code>++</code> bullet appears, then dims once you move past it.</li><li class="frag">Two leading spaces nest a point under the previous one.<ul><li>Like this supporting detail.</li></ul></li></ul>
       </section>
-
-      <!-- 05 · end ··································································· -->
+      <section class="slide" id="a-figure-beside-its-argument" data-fx="slide" data-min="2.33">
+      <header><p class="kicker">The Language</p><h2>A figure beside its argument</h2></header>
+      <div class="cols"><div><p class="lead">The lone pipe below splits this slide into two columns.</p>
+        <ul><li>The figure was pasted once and now travels inside the file.</li><li><code>fill</code> stretches it to match the column.</li></ul></div><div style="align-self:stretch;display:flex;flex-direction:column;min-height:0"><figure class="fig" style="flex:1;min-height:0;display:flex;flex-direction:column;margin:0"><img data-name="pic-1" src="data:image/png;base64,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" alt="Attention against slide density (synthetic)" style="flex:1;min-height:0;width:100%;object-fit:contain;border:1px solid var(--rule);border-radius:6px;display:block"><figcaption><b>Figure 1</b> — Attention against slide density (synthetic)</figcaption></figure></div></div>
+      </section>
+      <section class="slide slide--section" id="evidence" data-section="Evidence" data-sn="2">
+      <p class="sec__no">§ 02</p>
+      <h2>Evidence</h2>
+      </section>
+      <section class="slide" id="tables-are-booktabs" data-min="3">
+      <header><p class="kicker">Evidence</p><h2>Tables are booktabs</h2></header>
+      <table class="tbl"><caption><b>Table 1</b> — Where a typical talk spends its slides</caption><thead><tr><th>Layout</th><th class="num">Slides</th><th class="num">Share</th></tr></thead><tbody><tr><td>Content</td><td class="num">9</td><td class="num">0.60</td></tr><tr><td>Dividers</td><td class="num">3</td><td class="num">0.20</td></tr><tr><td>Appendix</td><td class="num">3</td><td class="num">0.20</td></tr></tbody></table>
+        <p class="lead">One caption line, numbered automatically — the style follows <sup class="cite">[2]</sup>.</p>
+      </section>
+      <section class="slide" id="display-mathematics" data-min="2.33">
+      <header><p class="kicker">Evidence</p><h2>Display mathematics</h2></header>
+      <p class="lead">Equations on their own line are numbered like the environments:</p>
+        <div class="math math--eq">\int_0^1 x^2\,dx = \tfrac{1}{3}</div>
+        <p>Delete the two KaTeX lines in the head and this stays readable TeX.</p>
+      </section>
+      <section class="slide slide--section" id="backstage" data-section="Backstage" data-backup>
+      <p class="sec__no">§ A</p>
+      <h2>Backstage</h2>
+      </section>
+      <section class="slide" id="held-in-reserve">
+      <header><p class="kicker">Backstage</p><h2>Held in reserve</h2></header>
+      <p class="lead">Slides after a <code>::backup</code> section sit outside the count and the plan.</p>
+        <ul><li>The agenda skips them; the G menu keeps them one keypress away.</li><li>PgDn still crosses over — the escape hatch is the point.</li></ul>
+      <aside class="notes">If asked about limits, jump here.</aside>
+      </section>
+      <section class="slide" id="references">
+      <header><p class="kicker">Contents</p><h2>References</h2></header>
+      <ol class="refs"><li>Knuth, D. (1984). Literate Programming. The Computer Journal.</li><li>Tufte, E. (1983). The Visual Display of Quantitative Information. Graphics Press.</li></ol>
+      </section>
       <section class="slide slide--end" id="end">
-        <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
-        <h2>Questions &amp; discussion</h2>
-        <p class="contact"><b>you@example.edu</b> · Your Institute</p>
-        <p class="src">slides — this file is the source: view, copy, edit, share</p>
+      <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
+      <h2>Questions &amp; discussion</h2>
+      <div class="qr" style="margin:20px auto 6px;line-height:0;color:var(--ink)"><svg viewBox="0 0 29 29" width="150" height="150" shape-rendering="crispEdges" role="img" aria-label="QR code"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM16 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM12 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM19 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM12 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM12 5h1v1h-1zM15 5h1v1h-1zM16 5h1v1h-1zM18 5h1v1h-1zM19 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM12 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM16 7h1v1h-1zM17 7h1v1h-1zM20 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM9 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM19 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM1 9h1v1h-1zM2 9h1v1h-1zM3 9h1v1h-1zM5 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM25 9h1v1h-1zM28 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM13 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM19 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM25 10h1v1h-1zM26 10h1v1h-1zM27 10h1v1h-1zM0 11h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM11 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM16 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM24 11h1v1h-1zM26 11h1v1h-1zM27 11h1v1h-1zM0 12h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM22 12h1v1h-1zM25 12h1v1h-1zM27 12h1v1h-1zM28 12h1v1h-1zM0 13h1v1h-1zM1 13h1v1h-1zM2 13h1v1h-1zM4 13h1v1h-1zM5 13h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM17 13h1v1h-1zM18 13h1v1h-1zM19 13h1v1h-1zM21 13h1v1h-1zM0 14h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM14 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM24 14h1v1h-1zM25 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM20 15h1v1h-1zM21 15h1v1h-1zM23 15h1v1h-1zM25 15h1v1h-1zM27 15h1v1h-1zM0 16h1v1h-1zM1 16h1v1h-1zM3 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM13 16h1v1h-1zM17 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM27 16h1v1h-1zM2 17h1v1h-1zM4 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM17 17h1v1h-1zM21 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM17 18h1v1h-1zM20 18h1v1h-1zM21 18h1v1h-1zM22 18h1v1h-1zM24 18h1v1h-1zM27 18h1v1h-1zM28 18h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM14 19h1v1h-1zM17 19h1v1h-1zM19 19h1v1h-1zM22 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM27 19h1v1h-1zM28 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM9 20h1v1h-1zM11 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM24 20h1v1h-1zM26 20h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM15 21h1v1h-1zM20 21h1v1h-1zM24 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM12 22h1v1h-1zM16 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM9 23h1v1h-1zM10 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM15 23h1v1h-1zM17 23h1v1h-1zM20 23h1v1h-1zM24 23h1v1h-1zM25 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM11 24h1v1h-1zM16 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM8 25h1v1h-1zM9 25h1v1h-1zM10 25h1v1h-1zM12 25h1v1h-1zM13 25h1v1h-1zM15 25h1v1h-1zM17 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM21 25h1v1h-1zM22 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM28 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM11 26h1v1h-1zM15 26h1v1h-1zM16 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM24 26h1v1h-1zM25 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h1v1h-1zM14 27h1v1h-1zM16 27h1v1h-1zM17 27h1v1h-1zM18 27h1v1h-1zM19 27h1v1h-1zM20 27h1v1h-1zM22 27h1v1h-1zM27 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM15 28h1v1h-1zM16 28h1v1h-1zM18 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM23 28h1v1h-1zM24 28h1v1h-1zM25 28h1v1h-1zM27 28h1v1h-1z" fill="currentColor"/></svg></div><p class="src" style="margin:0 0 10px">https://example.org/lectern</p>
+      <p class="contact"><b>https://example.org/lectern</b></p>
+      <p class="src">slides — this file is the source: view, copy, edit, share</p>
       </section>
-
     </div><!-- /slides -->
 
     <div class="ovfbadge" id="ovf" aria-hidden="true"></div>
@@ -473,8 +490,8 @@ ol.refs li{margin-bottom:10px;break-inside:avoid;padding-left:4px}
 
 /* ── deck config — edit me ─────────────────────────────────── */
 var DECK={
-  shortTitle:"Your Talk",
-  byline:"F. Lastname · Venue · 2026"
+  shortTitle:"Showcase",
+  byline:"The Lectern Project · Showcase · 2026"
 };
 
 var $=function(s){return document.querySelector(s);};
@@ -746,11 +763,6 @@ document.addEventListener('click',function(e){
 var tocEl=$('#toc'),secBtn=$('#runSection'),tocOn=false;
 (function buildSections(){
   var ag=document.querySelector('.slide[data-agenda] .agenda');
-  if(ag){
-    var mains=SECTIONS.filter(function(k){return !k.bk;}).length;
-    if(mains>5)ag.classList.add('agenda--dense');
-    if(mains>8)ag.classList.add('agenda--cols');
-  }
   SECTIONS.forEach(function(k,j){
     var end=SECTIONS[j+1]?SECTIONS[j+1].i:N,count=end-k.i;
     var row='<span class="ag__no">§ '+esc(k.bk?'A':String(k.n).padStart(2,'0'))+'</span><span class="ag__t">'+esc(k.t)+'</span><span class="ag__n">'+count+' slide'+(count>1?'s':'')+'</span>';
@@ -1123,5 +1135,6 @@ window.Lectern={go:function(n){go(n-1);},next:next,prev:prev,overview:overview,c
 go(idx());
 })();
 </script>
+<!--lectern-outline:v1:dGl0bGU6IExlY3Rlcm4sIEVuZCB0byBFbmQKc3VidGl0bGU6IEV2ZXJ5IGNvbnN0cnVjdCBvZiB0aGUgb3V0bGluZSBsYW5ndWFnZSwgb24gb25lIGRlY2sKYXV0aG9yczogVGhlIExlY3Rlcm4gUHJvamVjdAp2ZW51ZTogU2hvd2Nhc2UgwrcgMjAyNgpjb250YWN0OiBodHRwczovL2V4YW1wbGUub3JnL2xlY3Rlcm4Kc2hvcnQ6IFNob3djYXNlCnRpbWU6IDEybQpsaW5rOiBodHRwczovL2V4YW1wbGUub3JnL2xlY3Rlcm4KcmVmczoKICBrbnV0aDg0OiBLbnV0aCwgRC4gKDE5ODQpLiBMaXRlcmF0ZSBQcm9ncmFtbWluZy4gVGhlIENvbXB1dGVyIEpvdXJuYWwuCiAgdHVmdGU4MzogVHVmdGUsIEUuICgxOTgzKS4gVGhlIFZpc3VhbCBEaXNwbGF5IG9mIFF1YW50aXRhdGl2ZSBJbmZvcm1hdGlvbi4gR3JhcGhpY3MgUHJlc3MuCgojIFRoZSBMYW5ndWFnZQpQbGFpbiB0ZXh0IGluLCBhIGZpbmlzaGVkIGRlY2sgb3V0IOKAlCB0aGlzIGZpbGUgaXMgaXRzIG93biB0dXRvcmlhbC4KCiMjIFBhcmFncmFwaHMgYW5kIGVtcGhhc2lzIEAybQpUaGUgZmlyc3QgbGluZSBvZiBhIHNsaWRlIGlzIGl0cyBsZWFkIOKAlCB0aGUgcm9vbSByZWFkcyBpdCBiZWZvcmUgeW91IHNwZWFrLgpMYXRlciBsaW5lcyBhcmUgYm9keSBwYXJhZ3JhcGhzLiBJbmxpbmUgeW91IGdldCAqKmJvbGQqKiwgKml0YWxpYyosIGBjb2RlYCwKbWF0aGVtYXRpY3MgbGlrZSAkZV57aVxwaX0rMT0wJCwgYW5kIGNpdGF0aW9ucyBzdWNoIGFzIFtAa251dGg4NF0uCj4gU3BlYWtlciBub3RlcyBsaXZlIG9uIE4gYW5kIGZlZWQgdGhlID9oYW5kb3V0IHByaW50LgoKIyMgU3RlcHMgcmV2ZWFsIG9uIHRoZSBhcnJvdyBrZXkKLSBBIHBsYWluIGJ1bGxldCBpcyBhbHdheXMgdmlzaWJsZS4KKyBBIGArYCBidWxsZXQgYXBwZWFycyB3aGVuIHlvdSBwcmVzcyDihpIuCisrIEEgYCsrYCBidWxsZXQgYXBwZWFycywgdGhlbiBkaW1zIG9uY2UgeW91IG1vdmUgcGFzdCBpdC4KKyBUd28gbGVhZGluZyBzcGFjZXMgbmVzdCBhIHBvaW50IHVuZGVyIHRoZSBwcmV2aW91cyBvbmUuCiAgLSBMaWtlIHRoaXMgc3VwcG9ydGluZyBkZXRhaWwuCgojIyBBIGZpZ3VyZSBiZXNpZGUgaXRzIGFyZ3VtZW50Cjo6Znggc2xpZGUKVGhlIGxvbmUgcGlwZSBiZWxvdyBzcGxpdHMgdGhpcyBzbGlkZSBpbnRvIHR3byBjb2x1bW5zLgotIFRoZSBmaWd1cmUgd2FzIHBhc3RlZCBvbmNlIGFuZCBub3cgdHJhdmVscyBpbnNpZGUgdGhlIGZpbGUuCi0gYGZpbGxgIHN0cmV0Y2hlcyBpdCB0byBtYXRjaCB0aGUgY29sdW1uLgp8CiFbcGljLTEgfCBBdHRlbnRpb24gYWdhaW5zdCBzbGlkZSBkZW5zaXR5IChzeW50aGV0aWMpIHwgZmlsbF0KCiMgRXZpZGVuY2UKIyMgVGFibGVzIGFyZSBib29rdGFicyBAM20KfCBMYXlvdXQgfCBTbGlkZXMgfCBTaGFyZSB8CnwtLS18LS0tOnwtLS06fAp8IENvbnRlbnQgfCA5IHwgMC42MCB8CnwgRGl2aWRlcnMgfCAzIHwgMC4yMCB8CnwgQXBwZW5kaXggfCAzIHwgMC4yMCB8Cnw9IFdoZXJlIGEgdHlwaWNhbCB0YWxrIHNwZW5kcyBpdHMgc2xpZGVzCk9uZSBjYXB0aW9uIGxpbmUsIG51bWJlcmVkIGF1dG9tYXRpY2FsbHkg4oCUIHRoZSBzdHlsZSBmb2xsb3dzIFtAdHVmdGU4M10uCgojIyBEaXNwbGF5IG1hdGhlbWF0aWNzCkVxdWF0aW9ucyBvbiB0aGVpciBvd24gbGluZSBhcmUgbnVtYmVyZWQgbGlrZSB0aGUgZW52aXJvbm1lbnRzOgokJFxpbnRfMF4xIHheMlwsZHggPSBcdGZyYWN7MX17M30kJApEZWxldGUgdGhlIHR3byBLYVRlWCBsaW5lcyBpbiB0aGUgaGVhZCBhbmQgdGhpcyBzdGF5cyByZWFkYWJsZSBUZVguCgojIEJhY2tzdGFnZSA6OmJhY2t1cAojIyBIZWxkIGluIHJlc2VydmUKU2xpZGVzIGFmdGVyIGEgYDo6YmFja3VwYCBzZWN0aW9uIHNpdCBvdXRzaWRlIHRoZSBjb3VudCBhbmQgdGhlIHBsYW4uCi0gVGhlIGFnZW5kYSBza2lwcyB0aGVtOyB0aGUgRyBtZW51IGtlZXBzIHRoZW0gb25lIGtleXByZXNzIGF3YXkuCi0gUGdEbiBzdGlsbCBjcm9zc2VzIG92ZXIg4oCUIHRoZSBlc2NhcGUgaGF0Y2ggaXMgdGhlIHBvaW50Lgo+IElmIGFza2VkIGFib3V0IGxpbWl0cywganVtcCBoZXJlLgo=-->
 </body>
 </html>

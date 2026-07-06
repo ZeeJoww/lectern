@@ -21,7 +21,7 @@ The lead line the room reads first.
 > speaker note (press N / feeds ?handout)
 ```
 
-`# section` · `## slide @4m` · `- bullet` · `+ step` · `> note` · `![name | caption | fill]` figure · `|` alone = two columns · `|a|b|` tables · `[@key]` citations with a `refs:` block · `!video[url]` · `time: 25m` pacing · `::compact` · `::fx slide` · `# Appendix ::backup` · `link:` → QR on the end slide · `theme: slate` · `**bold**` `` `code` `` `$TeX$`. **Paste or drop an image** and Compose inserts it as a captioned figure (auto-downscaled). The live preview *is* your deck — click it and present — and it warns, while you type, if any slide outgrows the canvas. **Import deck** re-opens a downloaded file, recovering outline *and* images. The EN ⇄ 中文 button localises the composer; add `lang: zh` to the outline for a Chinese deck (议程, 问答与讨论, CJK deep links).
+`# section` · `## slide @4m` · `- bullet` · `+ step` · `++ dim step` · `$$eq$$` · `> note` · `![name | caption | fill]` figure · `|` alone = two columns · `|a|b|` tables · `[@key]` citations with a `refs:` block · `!video[url]` · `time: 25m` pacing · `::compact` · `::fx slide` · `# Appendix ::backup` · `link:` → QR on the end slide · `theme: slate` · `**bold**` `` `code` `` `$TeX$`. **Paste or drop an image** and Compose inserts it as a captioned figure (auto-downscaled). The live preview *is* your deck — click it and present — and it warns, while you type, if any slide outgrows the canvas. **Import deck** re-opens a downloaded file, recovering outline *and* images. The EN ⇄ 中文 button localises the composer; add `lang: zh` to the outline for a Chinese deck (议程, 问答与讨论, CJK deep links).
 
 ## Quick start (HTML path)
 
@@ -65,11 +65,15 @@ Send the file · link a slide by `#id` · print to PDF (`Ctrl/Cmd+P`, pages pre-
 | `lectern.html` | The demo deck + engine — every component shown with usage snippets. |
 | `compose.html` | Type a plain-text outline → download a finished deck. Live preview + overflow warnings. |
 | `starter.html` | Blank 5-slide skeleton for those who prefer editing HTML directly. |
+| `GRAMMAR.md` | The outline language, canonical v1 reference. |
+| `showcase.outline.txt` / `showcase.html` | Every construct on one deck — tutorial, fixture, and demo. |
+| `LICENSE` · `package.json` · `.github/` | MIT; the ladder as `npm run` scripts; CI running it all + Pages deploy. |
+| `statics.py` / `scale-probe.js` | Ladder rung 2 formalised; 137-slide performance probe. |
 | `LECTERN-SPEC.md` | Contracts: invariants, pixel budgets, feature specs. Read §1–§6 before editing. |
 | `LECTERN-ROADMAP-2.md` | Roadmap 2 (G0–G9) — complete; kept for its design record. |
 | `LECTERN-ROADMAP-3.md` | Current plan (H0–H9): rehearsal loop, longevity, overview keyboard, tooling. |
 | `LECTERN-DEVNOTES.md` | Living changelog — decisions with their *why*, per release. |
-| `smoke.test.js` | 94 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
+| `smoke.test.js` | 97 automated checks. `npm i jsdom && node smoke.test.js lectern.html` (exit code = failures). |
 | `render-proof.js` | Headless proofs: structural snapshot, or `--strict` per-slide overflow truth at real font metrics. |
 | `a11y.test.js` | Accessibility gate: axe-core over all four surfaces + token contrast table. |
 | `vendor-qrcode.js` | Pinned MIT QR encoder (build-time only; decks receive an inline SVG). |
@@ -80,4 +84,8 @@ Send the file · link a slide by `#id` · print to PDF (`Ctrl/Cmd+P`, pages pre-
 
 `window.Lectern` exposes `go(n) · next() · prev() · overview() · presenter() · math(i) · check() · state() · on(event, fn) / off`. Events: `"slide" {i, id, el, frag, frags}` (plus `step:true` for in-slide reveals) and `"overview" {on}`. Every change should keep the smoke test green and land with a devnotes entry.
 
-*Release v2.24 — Roadmaps 1–3 complete. History in `LECTERN-DEVNOTES.md`.*
+## Repository
+
+Unzip `lectern-repo.zip`, `git init && git add -A && git commit`, push — CI runs the full ladder (statics → gated smoke → a11y → strict at real font metrics) and deploys the decks to Pages from `main`.
+
+*Release v2.25 — Roadmaps 1–3 complete, packaged. History in `LECTERN-DEVNOTES.md`.*

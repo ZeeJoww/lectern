@@ -3,6 +3,8 @@
      Executes the deck's JS in jsdom, snapshots the live DOM (folios,
      agenda, hydrated attrs) as offline HTML for WeasyPrint.
    Strict mode:      node render-proof.js deck.html --strict
+                       [--only=id,id]   isolate specific slides
+                       [--jobs=N]       parallel renders (default 4)
      G0: per-slide overflow truth. Requires the real fonts (STIX Two
      Text, Inter, JetBrains Mono — see LECTERN-DEVNOTES v2.5) and
      weasyprint + pdfinfo. Each slide is rendered ALONE with the

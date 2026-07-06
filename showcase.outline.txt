@@ -1,0 +1,57 @@
+title: Lectern, End to End
+subtitle: Every construct of the outline language, on one deck
+authors: The Lectern Project
+venue: Showcase · 2026
+contact: https://example.org/lectern
+short: Showcase
+time: 12m
+link: https://example.org/lectern
+refs:
+  knuth84: Knuth, D. (1984). Literate Programming. The Computer Journal.
+  tufte83: Tufte, E. (1983). The Visual Display of Quantitative Information. Graphics Press.
+
+# The Language
+Plain text in, a finished deck out — this file is its own tutorial.
+
+## Paragraphs and emphasis @2m
+The first line of a slide is its lead — the room reads it before you speak.
+Later lines are body paragraphs. Inline you get **bold**, *italic*, `code`,
+mathematics like $e^{i\pi}+1=0$, and citations such as [@knuth84].
+> Speaker notes live on N and feed the ?handout print.
+
+## Steps reveal on the arrow key
+- A plain bullet is always visible.
++ A `+` bullet appears when you press →.
+++ A `++` bullet appears, then dims once you move past it.
++ Two leading spaces nest a point under the previous one.
+  - Like this supporting detail.
+
+## A figure beside its argument
+::fx slide
+The lone pipe below splits this slide into two columns.
+- The figure was pasted once and now travels inside the file.
+- `fill` stretches it to match the column.
+|
+![pic-1 | Attention against slide density (synthetic) | fill]
+
+# Evidence
+## Tables are booktabs @3m
+| Layout | Slides | Share |
+|---|---:|---:|
+| Content | 9 | 0.60 |
+| Dividers | 3 | 0.20 |
+| Appendix | 3 | 0.20 |
+|= Where a typical talk spends its slides
+One caption line, numbered automatically — the style follows [@tufte83].
+
+## Display mathematics
+Equations on their own line are numbered like the environments:
+$$\int_0^1 x^2\,dx = \tfrac{1}{3}$$
+Delete the two KaTeX lines in the head and this stays readable TeX.
+
+# Backstage ::backup
+## Held in reserve
+Slides after a `::backup` section sit outside the count and the plan.
+- The agenda skips them; the G menu keeps them one keypress away.
+- PgDn still crosses over — the escape hatch is the point.
+> If asked about limits, jump here.

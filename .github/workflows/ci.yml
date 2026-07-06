@@ -1,0 +1,39 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: System deps (fonts, poppler, pango)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-inter fonts-jetbrains-mono poppler-utils \
+            libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 unzip
+      - name: STIX Two Text (pinned v2.0.2 from the upstream archive)
+        run: |
+          mkdir -p ~/.fonts && cd /tmp
+          curl -sL -o stix.zip https://codeload.github.com/stipub/stixfonts/zip/refs/heads/master
+          unzip -o -j stix.zip "stixfonts-master/archive/STIXv2.0.2/OTF/*.otf" -d ~/.fonts
+          fc-cache -f
+      - run: pip install --quiet html5lib weasyprint
+      - run: npm install
+      - run: npm run statics
+      - run: npm run gated
+      - run: npm run a11y
+      - run: npm run strict
+  pages:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    permissions: { pages: write, id-token: write }
+    environment: { name: github-pages }
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: . }
+      - uses: actions/deploy-pages@v4

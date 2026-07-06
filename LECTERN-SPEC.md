@@ -19,7 +19,7 @@ A single self-contained HTML file that is an academic slide deck: fixed 1280×72
 | Stage | `id="stage"` | header chrome → `#slides` (14 `<section class="slide">`) → `#ovf` badge → footer chrome → progress bar |
 | Engine | last `<script>` | One IIFE, ES5 style (`var`, `function`), ~230 lines |
 
-Engine symbols you will hook into: `DECK` (config), `slides` (array), `N`, `cur`, `go(i,fromHash)`, `load(i)` (lazy iframes + templates), `fit()`, `overview(on)`, `measure()`/`audit()` (D key), keydown `switch`, `on/off/emit` (F0 hooks), `window.Lectern` public API `{go,next,prev,overview,check,on,off}`.
+Engine symbols you will hook into: `DECK` (config), `slides` (array), `N`, `cur`, `go(i,fromHash)`, `load(i)` (lazy iframes + templates), `fit()`, `overview(on)`, `measure()`/`audit()` (D key), keydown `switch`, `on/off/emit` (F0 hooks), `window.Lectern` public API `{go,next,prev,overview,check,on,off,presenter,math,state}`.
 
 ## 3 · Non-negotiable invariants (the reminders)
 

@@ -2,9 +2,25 @@
 
 Living log for `lectern.html`. **Newest entry first.** Every change lands with an entry using the template at the bottom — decisions with their *why*, testing evidence, and handoff pointers. Companions: `LECTERN-SPEC.md` (contracts — read §1–§6 before coding), `smoke.test.js` (automated checks; extend it with every feature).
 
-Status ledger: **v2.24** · Roadmap 3 complete (H0–H9) · smoke 94/94 (+2 strict-gated) · a11y green · strict proof parallel (`--jobs`) · deck Build v2.21 (last deck-touching release) · MANUAL-QA.md scripts the human pass.
+Status ledger: **v2.25** · release-ready: grammar v1 canonical (`GRAMMAR.md`), showcase deck, repo pack (LICENSE · CI · `package.json` · `statics.py`), scale probed to 137 slides · smoke 97/97 (+2 gated) · a11y ×5 · strict ×3 · deck Build v2.25.
 
 Roadmap 3 issued 2026-07-05 → `LECTERN-ROADMAP-3.md`. **All ten items shipped: H0–H9 (v2.15–v2.24).**
+
+## v2.25 — release packaging: grammar v1, showcase, repo, scale (2026-07-05)
+
+**Grammar v1 canonical.** `GRAMMAR.md` is now the single reference (header keys, structure, in-slide table, tables, citations, media, reserved words, the append-only promise). Two completions close the last HTML-only gaps a canonical v1 could not honestly freeze: `$$TeX$$` on its own line → a numbered display equation (escaped only — inline formatting must never mangle TeX), and `++ text` → a fragment that dims once passed. Downloaded decks now embed `lectern-outline:v1:…`; Import reads any `v<n>:` and the legacy unversioned form — the ten lines that make future grammar eras distinguishable.
+
+**Showcase.** `showcase.outline.txt` → `showcase.html` (via Compose, PIL-drawn figure inlined): 13 slides exercising *every* construct — columns+fill, booktabs, citations+auto-references, `$$eq$$`, `+`/`++`, `::fx`, `::compact`-free but budgeted `@Xm`, a `::backup` section, `link:` QR. Zero lints, strict-fits first try; wired as a boot fixture in smoke and a fifth a11y target; `npm run strict` covers it.
+
+**Repo pack.** `LICENSE` (MIT, vendor note) · `.github/workflows/ci.yml` running the whole ladder on Ubuntu (apt fonts + pinned STIX v2.0.2 from the upstream archive via codeload; weasyprint; `statics → gated smoke → a11y → strict`) plus a Pages deploy on main · `package.json` with the ladder as npm scripts and pinned devDeps · `statics.py` formalising rung 2 · `.gitignore`. The whole tree ships as `lectern-repo.zip`.
+
+**Scale probe — and the bug it caught.** `scale-probe.js` drives a 120-content-slide deck: build 6.5 ms, `check()` 0.4 ms, navigation 1.8 ms/step, search 5 ms across 137 slides, overview toggle 3 ms — no quadratic anywhere. But strict flagged **the agenda itself**: at 6 sections its rows (19 px padding, 27 px serif) exceed the canvas — my original "≤6 fits" budget was knife-edge arithmetic that real fonts push over. Fix in the engine: `agenda--dense` past 5 sections, `agenda--cols` (two columns, break-inside avoid) past 8; probe hardened to 9 sections to exercise the column path; demo/showcase agendas re-verified. Deck → Build v2.25. Exactly the class of bug the probe existed to find — plus a recurring pitfall re-noted: `cmd | tail; echo $?` reports tail's exit, not cmd's.
+
+**Safari watchlist.** MANUAL-QA gains a WebKit matrix (inert+VoiceOver, `file://` popup/localStorage, iOS PointerEvents for ink, fixed-position veil, Print-Backgrounds default, `beforeprint`, download-attribute on iOS) — the deck has never met Safari; the list makes the first encounter targeted.
+
+**Testing.** smoke 97/97 (+2 gated) · a11y ×5 clean · strict green on demo/starter/showcase and the 137-slide probe deck.
+
+---
 
 Roadmap 2 issued 2026-07-04 → `LECTERN-ROADMAP-2.md`. **All ten items shipped: G0–G2 (v2.5–2.7), G3–G9 (v2.8–2.14).**
 

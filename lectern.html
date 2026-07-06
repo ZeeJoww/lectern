@@ -40,7 +40,7 @@
          presenter() · math(i) · check() · state() · on(event,fn) → fn ·
          off(event,fn). Events: "slide" {i,id,el,frag,frags}
          (+ step:true for in-slide reveals); "overview" {on}.
-  Build v2.21 — change log ships alongside as LECTERN-DEVNOTES.md.
+  Build v2.25 — change log ships alongside as LECTERN-DEVNOTES.md.
   The Google Fonts <link> is optional — remove it and the deck
   falls back to Georgia / system fonts, fully offline.
   ────────────────────────────────────────────────────────────────────
@@ -268,8 +268,12 @@ body.blackout-on #veil{opacity:1;visibility:visible;transition:opacity .15s ease
 .math[data-mathed]{background:none;border:0;padding:1px 0;white-space:normal}
 .math--eq[data-mathed]{padding-right:76px}
 
-/* ── agenda + section popover (F4) ──────────────────────────── */
+/* ── agenda + section popover (F4; scales per H-probe) ──────── */
 .agenda{margin-top:10px;border-top:2px solid var(--rule-strong)}
+.agenda--dense .ag{padding:11px 2px}
+.agenda--dense .ag__t{font-size:23px}
+.agenda--cols{columns:2;column-gap:56px}
+.agenda--cols .ag{break-inside:avoid}
 .ag{display:flex;align-items:baseline;gap:26px;padding:19px 2px;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .ag:hover{background:var(--lapis-soft)}
 .ag__no{font:600 15px var(--mono);letter-spacing:.08em;color:var(--lapis);width:64px;flex:none}
@@ -971,6 +975,11 @@ document.addEventListener('click',function(e){
 var tocEl=$('#toc'),secBtn=$('#runSection'),tocOn=false;
 (function buildSections(){
   var ag=document.querySelector('.slide[data-agenda] .agenda');
+  if(ag){
+    var mains=SECTIONS.filter(function(k){return !k.bk;}).length;
+    if(mains>5)ag.classList.add('agenda--dense');
+    if(mains>8)ag.classList.add('agenda--cols');
+  }
   SECTIONS.forEach(function(k,j){
     var end=SECTIONS[j+1]?SECTIONS[j+1].i:N,count=end-k.i;
     var row='<span class="ag__no">§ '+esc(k.bk?'A':String(k.n).padStart(2,'0'))+'</span><span class="ag__t">'+esc(k.t)+'</span><span class="ag__n">'+count+' slide'+(count>1?'s':'')+'</span>';

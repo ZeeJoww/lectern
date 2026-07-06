@@ -1,0 +1,21 @@
+{
+  "name": "lectern",
+  "version": "2.25.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Academic slide decks as a single HTML file — plus Compose, a plain-text outline that becomes the deck.",
+  "scripts": {
+    "test": "node smoke.test.js lectern.html",
+    "gated": "SMOKE_STRICT=1 node smoke.test.js lectern.html",
+    "a11y": "node a11y.test.js",
+    "strict": "node render-proof.js lectern.html --strict && node render-proof.js starter.html --strict && node render-proof.js showcase.html --strict",
+    "statics": "python3 statics.py",
+    "probe": "node scale-probe.js",
+    "build:compose": "python3 build-compose.py"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.0",
+    "jsdom": "^29.1.1",
+    "qrcode-generator": "^2.0.4"
+  }
+}

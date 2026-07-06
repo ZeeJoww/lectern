@@ -13,3 +13,17 @@ Everything else is covered by the ladder: smoke → statics → render-proof →
 - [ ] **QR** — `link:` on the end slide decodes with a phone camera from the projector distance you'd actually use.
 - [ ] **Offline math** — download with *Embed math* checked, go offline (devtools), reload: formulas render; no console 404s.
 - [ ] **Compose preview keys** — click the preview, present with the full key map inside the srcdoc frame.
+
+## Browser matrix — WebKit watchlist (never yet run against Safari)
+
+The engine was verified in Chromium-class environments only. These are the
+APIs it leans on where WebKit historically diverges; check each on macOS
+Safari **and** iOS once:
+
+- [ ] `inert` on hidden slides — VoiceOver skips them; overview thumbnails still tappable (inert is lifted there).
+- [ ] Presenter popup — `window.open('about:blank')` from `file://`; opener access; `localStorage` for **● rec** (Safari may throw on `file://` → report renders, storage silently skipped).
+- [ ] Ink on iOS — PointerEvents from touch; drawing must not scroll/zoom the page.
+- [ ] `position:fixed` blackout veil on iOS (URL-bar resize).
+- [ ] Print: Safari defaults **Print Backgrounds off** — washes/borders vanish unless enabled; folios/runheads still present. `beforeprint` may not fire → unvisited lazy frames can print blank (known, documented).
+- [ ] `scrollIntoView({block:'nearest'})` in overview; `execCommand('copy')` for the rehearsal report.
+- [ ] Compose: paste image from clipboard; `Blob`/`FileReader` sizes; download attribute on iOS (falls back to a view — note for speakers).

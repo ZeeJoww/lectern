@@ -180,7 +180,7 @@ en:{hint:'Type your talk on the left. The deck builds itself on the right.',
     oh2:'Outline — what to say, slide by slide',
     ph2:'Live preview — click it, then use the deck keys (← → O P T …)',
     dl:'Download deck',imp:'Import deck',lang:'中文',
-    cheat:'<code># Section</code> · <code>## Slide title</code> · plain line = paragraph · <code>- bullet</code> · <code>+ step (→)</code> · two-space indent nests · <code>&gt; note</code> · paste / drop an image · <code>**bold**</code> <code>*italic*</code> <code>`code`</code> <code>$TeX$</code> · <code>::compact</code> · <code>|</code> alone = columns · <code>|a|b|</code> table (+<code>|=</code> caption) · <code>[@key]</code> with <code>refs:</code> · <code>!video[url]</code> · <code>## T @4m</code>+<code>time: 25m</code> · <code>::fx slide</code> · <code># … ::backup</code> appendix · <code>link:</code> → QR · <code>theme:</code> · <code>lang: zh</code>',
+    cheat:'<code># Section</code> · <code>## Slide title</code> · plain line = paragraph · <code>- bullet</code> · <code>+ step (→)</code> · <code>++ dim step</code> · <code>$$eq$$</code> · two-space indent nests · <code>&gt; note</code> · paste / drop an image · <code>**bold**</code> <code>*italic*</code> <code>`code`</code> <code>$TeX$</code> · <code>::compact</code> · <code>|</code> alone = columns · <code>|a|b|</code> table (+<code>|=</code> caption) · <code>[@key]</code> with <code>refs:</code> · <code>!video[url]</code> · <code>## T @4m</code>+<code>time: 25m</code> · <code>::fx slide</code> · <code># … ::backup</code> appendix · <code>link:</code> → QR · <code>theme:</code> · <code>lang: zh</code>',
     fits:'fits ✓',ovfN:' overflow',pages:' slides · ',
     warnFit:'Every slide fits the 1280×720 canvas.',
     warnRow:function(r){return '⚠ slide '+r.slide+' ('+r.id+') is '+r.overflow+' too tall — trim or split it';},
@@ -195,7 +195,7 @@ zh:{hint:'左侧输入讲稿，右侧自动生成幻灯片。',
     oh2:'大纲 — 每一页要讲的内容',
     ph2:'实时预览 — 点击后即可使用快捷键（← → O P T …）',
     dl:'下载幻灯片',imp:'导入幻灯片',lang:'EN',
-    cheat:'<code># 章节</code> · <code>## 幻灯片标题</code> · 普通行 = 段落 · <code>- 要点</code> · <code>+ 分步显示 (→)</code> · 行首两个空格 = 子要点 · <code>&gt; 演讲备注</code> · 直接粘贴 / 拖入图片 · <code>**粗体**</code> <code>*斜体*</code> <code>`代码`</code> <code>$公式$</code> · <code>::compact</code> · 单独一行 <code>|</code> = 分栏 · <code>|a|b|</code> 表格（<code>|=</code> 表题）· <code>[@key]</code> 配 <code>refs:</code> · <code>!video[url]</code> · <code>## 标题 @4m</code>+<code>time: 25m</code> · <code>::fx slide</code> · <code># … ::backup</code> 附录 · <code>link:</code> → 二维码 · <code>theme:</code> · <code>lang: zh</code>',
+    cheat:'<code># 章节</code> · <code>## 幻灯片标题</code> · 普通行 = 段落 · <code>- 要点</code> · <code>+ 分步显示 (→)</code> · <code>++ 变暗分步</code> · <code>$$公式$$</code> · 行首两个空格 = 子要点 · <code>&gt; 演讲备注</code> · 直接粘贴 / 拖入图片 · <code>**粗体**</code> <code>*斜体*</code> <code>`代码`</code> <code>$公式$</code> · <code>::compact</code> · 单独一行 <code>|</code> = 分栏 · <code>|a|b|</code> 表格（<code>|=</code> 表题）· <code>[@key]</code> 配 <code>refs:</code> · <code>!video[url]</code> · <code>## 标题 @4m</code>+<code>time: 25m</code> · <code>::fx slide</code> · <code># … ::backup</code> 附录 · <code>link:</code> → 二维码 · <code>theme:</code> · <code>lang: zh</code>',
     fits:'全部适配 ✓',ovfN:' 页超高',pages:' 页 · ',
     warnFit:'每一页都在 1280×720 画布之内。',
     warnRow:function(r){return '⚠ 第 '+r.slide+' 页（'+r.id+'）超出 '+r.overflow+' — 请精简或拆分';},
@@ -304,6 +304,8 @@ function parseOutline(txt){
     if(m=l.match(/^>\s?(.*)/)){if(curSl)curSl.notes.push(m[1]);return;}
     if(curSl){
       if(m=l.match(/^::(\w+)(?:\s+(.+))?$/)){curSl.dir[m[1]]=m[2]||true;return;}
+      if(m=l.match(/^\$\$(.+)\$\$\s*$/)){curSl.body.push({t:'eq',x:m[1].trim()});return;}
+      if(m=l.match(/^(\s*)\+\+\s+(.+)/)){curSl.body.push({t:'li',frag:true,dim:true,d:m[1].length>=2?1:0,x:m[2]});return;}
       if(/^\|\s*$/.test(l)){curSl.body.push({t:'br'});return;}
       if(/^\|/.test(l)){
         var last=curSl.body[curSl.body.length-1];
@@ -457,7 +459,7 @@ function seq(body,st){
     if(!buf.length)return;
     var h='<ul>',open=false;
     buf.forEach(function(it){
-      var li='<li'+(it.frag?' class="frag"':'')+'>'+fmt(it.x)+'</li>';
+      var li='<li'+(it.frag?' class="frag'+(it.dim?' frag--dim':'')+'"':'')+'>'+fmt(it.x)+'</li>';
       if(it.d===1){
         if(!open){h=h.replace(/<\/li>$/,'');h+='<ul>';open=true;}
         h+=li;
@@ -475,6 +477,7 @@ function seq(body,st){
     if(it.t==='img'){out.push(renderImg(it));return;}
     if(it.t==='vid'){out.push(renderVid(it));return;}
     if(it.t==='tbl'){out.push(renderTbl(it));return;}
+    if(it.t==='eq'){out.push('<div class="math math--eq">'+escT(it.x)+'</div>');return;}
     if(it.t==='br')return;
     out.push('<p'+(st.sawP?'':' class="lead"')+'>'+fmt(it.x)+'</p>');st.sawP=true;
   });
@@ -586,11 +589,11 @@ function buildDeck(txt){
     out=put(out,htag,htag.replace('<html ','<html data-theme="'+thv[1].toLowerCase()+'" '));
   }
   var k=out.lastIndexOf('</body>');
-  return out.slice(0,k)+'<!--lectern-outline:'+b64e(txt)+'-->\n'+out.slice(k);
+  return out.slice(0,k)+'<!--lectern-outline:v1:'+b64e(txt)+'-->\n'+out.slice(k);
 }
 function extractOutline(deckHtml){
-  var m=String(deckHtml).match(/lectern-outline:([A-Za-z0-9+\/=]+)/);
-  return m?b64d(m[1]):null;
+  var m=String(deckHtml).match(/lectern-outline:(?:v(\d+):)?([A-Za-z0-9+\/=]+)/);
+  return m?b64d(m[2]):null;
 }
 function extractAssets(deckHtml){
   var out={},re=/<img data-name="([^"]+)" src="(data:[^"]+)"/g,m;

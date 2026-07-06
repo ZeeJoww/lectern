@@ -570,6 +570,31 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
       C.w.document.querySelector('#outline').value.split('\n')[1] === 'theme: sepia'
       || C.w.document.querySelector('#outline').value.includes('theme: sepia'));
 
+    /* ── v2.25: grammar v1 completions + outline marker ── */
+    const g1 = C.w.buildDeck('title: T\n\n## A\n$$E = mc^2$$\n++ a dimming step\n+ a plain step');
+    t('v1: $$…$$ is a numbered display equation; ++ is a dim step',
+      g1.includes('<div class="math math--eq">E = mc^2</div>')
+      && g1.includes('class="frag frag--dim">a dimming step')
+      && g1.includes('class="frag">a plain step'));
+    t('v1: outlines embed versioned; legacy unversioned still imports',
+      g1.includes('lectern-outline:v1:')
+      && C.w.extractOutline(g1) === 'title: T\n\n## A\n$$E = mc^2$$\n++ a dimming step\n+ a plain step'
+      && C.w.extractOutline('<!--lectern-outline:' + C.w.document.defaultView.btoa('title: L') + '-->') === 'title: L');
+
+    /* ── showcase fixture (if built) boots clean ── */
+    if (fs.existsSync('showcase.html')) {
+      const S2 = boot('https://localhost/showcase.html',
+        fs.readFileSync('showcase.html', 'utf8'));
+      await tick(60);
+      const ss = S2.w.Lectern.state();
+      t('showcase: boots clean, has appendix, refs, agenda',
+        S2.scriptErrors.length === 0 && ss.tot > 10
+        && S2.w.document.querySelector('.slide[data-backup]') !== null
+        && S2.w.document.querySelector('#references') !== null
+        && S2.w.document.querySelectorAll('#agenda .agenda a').length >= 2
+        && S2.w.document.querySelector('#end svg[aria-label="QR code"]') !== null);
+    }
+
     /* ── G9: ::fx directive ── */
     t('G9: ::fx slide lands as data-fx on the section',
       /id="a" data-fx="slide"/.test(C.w.buildDeck('title: T\n\n## A\n::fx slide\n- x')));
