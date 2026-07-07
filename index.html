@@ -3,21 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lectern</title>
-<meta http-equiv="refresh" content="0; url=lectern.html">
-<link rel="canonical" href="lectern.html">
+<title>Lectern — academic slides as one HTML file</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  html{height:100%}
-  body{
-    margin:0;height:100%;display:flex;align-items:center;justify-content:center;
-    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    color:#3b4252;background:#f6f8fa
-  }
-  a{color:#1a5490;text-decoration:none}
-  a:hover{text-decoration:underline}
+:root{--paper:#FFFFFF;--ink:#161B22;--ink-2:#5A6373;--lapis:#1E3D6B;--lapis-soft:#EDF2F8;--rubric:#A62B3A;--rule:#DCE0E6;--rule-strong:#9AA3AF;--wash:#F6F8FA;
+--serif:"STIX Two Text",Georgia,serif;--sans:Inter,-apple-system,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:940px;margin:0 auto;padding:0 24px}
+header.hero{background:var(--paper);border-bottom:1px solid var(--rule);padding:76px 0 64px}
+.kick{font:600 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lapis);margin:0 0 18px}
+h1{font:600 54px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.01em}
+.lede{font-size:21px;color:var(--ink-2);max-width:640px;margin:0 0 32px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;text-decoration:none;border-radius:9px;padding:12px 20px;font:600 15px var(--sans)}
+.btn--p{background:var(--lapis);color:#fff}
+.btn--s{background:var(--paper);color:var(--ink);border:1px solid var(--rule-strong)}
+section.band{padding:56px 0;border-bottom:1px solid var(--rule)}
+h2{font:600 13px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:22px}
+.card h3{font:600 20px/1.25 var(--serif);margin:0 0 8px}
+.card p{margin:0;color:var(--ink-2);font-size:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+pre{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:0;overflow:auto;font:400 13.5px/1.6 var(--mono);color:var(--ink)}
+.democard{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:22px}
+.democard h3{font:600 22px/1.2 var(--serif);margin:0 0 6px}
+.democard p{color:var(--ink-2);font-size:15px;margin:0 0 16px}
+a.inline{color:var(--lapis);text-decoration:none;border-bottom:1px solid var(--rule-strong)}
+footer{padding:44px 0 64px;color:var(--ink-2);font-size:14px}
+footer code{background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:1px 6px;font-size:13px}
+@media (max-width:820px){.grid,.two{grid-template-columns:1fr}h1{font-size:40px}}
 </style>
 </head>
 <body>
-<p>Loading <a href="lectern.html">lectern.html</a>…</p>
+<header class="hero"><div class="wrap">
+  <p class="kick">Lectern</p>
+  <h1>Academic slides, as one HTML file.</h1>
+  <p class="lede">No build, no server, no dependencies. Type your talk as plain text and download a deck that presents in any browser, prints to exact-size PDF, and travels as a single file you can email or archive for a decade.</p>
+  <div class="cta">
+    <a class="btn btn--p" href="compose.html">Write a talk →</a>
+    <a class="btn btn--s" href="showcase.html">See the showcase</a>
+    <a class="btn btn--s" href="lectern.html">Component demo</a>
+  </div>
+</div></header>
+
+<main>
+<section class="band"><div class="wrap">
+  <h2>Why it exists</h2>
+  <div class="grid">
+    <div class="card"><h3>One file, forever</h3><p>The deck is the slides, the source, and the archive at once. Nothing to install; nothing to break when a service shuts down.</p></div>
+    <div class="card"><h3>Write, don't format</h3><p>Compose turns a plain-text outline into a finished deck, warning you the moment a slide outgrows the page — while you type.</p></div>
+    <div class="card"><h3>Built for the podium</h3><p>Presenter view with notes, timer and pacing; speaker-note handouts; deep links per slide; overview, search, laser and ink — all offline.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>The whole language fits on a napkin</h2>
+  <div class="two">
+    <pre>title: The Portable Talk
+authors: A. Speaker (Institute)
+time: 20m
+
+# Motivation
+## Why sharing slides is hard @3m
+Most decks depend on a service or a build.
+- Attachments break or need accounts.
++ A talk should outlive its tooling.
+> Note: press N; feeds the handout.
+
+Inline **bold**, `code`, math $e^{i\pi}+1=0$
+and citations [@knuth84].</pre>
+    <div class="democard">
+      <h3>Then press Download.</h3>
+      <p>Columns, booktabs tables, figures you paste in, numbered equations, an auto-built agenda and references slide, a QR to the paper, backup slides held in reserve — every construct is one or two characters. The full reference is <a class="inline" href="GRAMMAR.md">GRAMMAR.md</a>.</p>
+      <p>Prefer HTML? Copy <a class="inline" href="starter.html">starter.html</a> and edit slides directly.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Verified, not just written</h2>
+  <div class="grid">
+    <div class="card"><h3>97 behaviour tests</h3><p>The engine and Compose run headless in jsdom on every change.</p></div>
+    <div class="card"><h3>Real-metric overflow proof</h3><p>Each slide is rendered with the actual fonts; if it spills the canvas, CI fails.</p></div>
+    <div class="card"><h3>Accessibility gate</h3><p>axe-core across every surface, plus a contrast check on all three themes.</p></div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  Open-source under the MIT license. Build a deck at <code>compose.html</code>, read the source of any deck you receive, and see <a class="inline" href="README.md">the repository README</a> for the full test ladder and contribution guide.
+</div></footer>
 </body>
 </html>

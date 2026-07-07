@@ -4,7 +4,7 @@ html5lib-parse every deck/tool page. Exit code = failures."""
 import re, subprocess, sys, os
 import html5lib
 fails = 0
-for f in ('lectern.html', 'starter.html', 'compose.html', 'showcase.html'):
+for f in ('lectern.html', 'starter.html', 'compose.html', 'showcase.html', 'index.html'):
     if not os.path.exists(f):
         continue
     raw = open(f, encoding='utf-8').read()

@@ -2,9 +2,23 @@
 
 Living log for `lectern.html`. **Newest entry first.** Every change lands with an entry using the template at the bottom — decisions with their *why*, testing evidence, and handoff pointers. Companions: `LECTERN-SPEC.md` (contracts — read §1–§6 before coding), `smoke.test.js` (automated checks; extend it with every feature).
 
-Status ledger: **v2.25** · release-ready: grammar v1 canonical (`GRAMMAR.md`), showcase deck, repo pack (LICENSE · CI · `package.json` · `statics.py`), scale probed to 137 slides · smoke 97/97 (+2 gated) · a11y ×5 · strict ×3 · deck Build v2.25.
+Status ledger: **v1.0.0** (internal v2.26) · launch kit shipped: landing page, CONTRIBUTING, release notes, hostile-import audit (2 injection vectors fixed) · smoke 99/99 (+2 gated) · a11y ×6 · strict ×3 · repo tags v1.0.0.
 
 Roadmap 3 issued 2026-07-05 → `LECTERN-ROADMAP-3.md`. **All ten items shipped: H0–H9 (v2.15–v2.24).**
+
+## v1.0.0 / v2.26 — launch kit + security hardening (2026-07-06)
+
+**Hostile-import audit — two real vulnerabilities, found by writing the fixture.** Compose ingests untrusted deck files (Import) and untrusted text (every field), so before tagging I wrote adversarial fixtures — which immediately failed, proving the audit necessary rather than ceremonial. (1) *Script-string splice:* header fields (`byline`, `short`) are spliced into the engine's `DECK` object literal inside a `<script>`; `jq` escaped `"` and `\` but not `<`, so `byline: </scr`+`ipt><scr`+`ipt>…` closed the engine script and injected executable HTML — a stored-XSS-equivalent in any opened deck. (2) *Attribute breakout:* external image URLs (`![https://… ]`) were interpolated into `src="…"` **unescaped**, so a `"`-bearing URL broke into an `onerror=` handler. Fixes: `jq` now also maps `<`→`\u003C`; `renderImg` runs external `src` through `escT`. Both pinned by hostile fixtures asserting `window.PWNED` stays `undefined` and the payloads appear only in neutralised form.
+
+**A build-tooling trap this surfaced (recorded for maintainers).** The first two `jq` fixes silently didn't take: the v2.25 `\uXXXX`-decoding safety pass at the bottom of `build-compose.py` — added to fix the display-escape bug — was decoding my *intended* `\u003C` back into `<` before writing. And a regex replacement can't emit `\u003C` either (`$` handling). Resolution: build the escape with `String.fromCharCode(92)` + `split/join`, so no `\uXXXX` literal and no `$` exists for either mechanism to eat. The general lesson: code-bearing escapes in a generator's template must be constructed, never written literally.
+
+**Launch kit.** `index.html` — a Pages landing in the deck's own tokens/fonts (hero → why → napkin-grammar → trust → footer), added to statics and as a sixth a11y target (caught a missing-`<main>` region violation, fixed). `CONTRIBUTING.md` compresses R1–R7, the ladder, the generator traps, and the "all user text is hostile" rule. `RELEASE-NOTES.md` distils the public v1.0.0 story + a maintenance policy (append-only grammar, pinned-external refresh cadence, Safari matrix each release). `package.json` → 1.0.0.
+
+**Public versioning.** The internal v2.x counter maps to a tagged **v1.0.0**; from here, internal build numbers continue in the devnotes while public tags are semver. The bravest-and-correct next move is to let real speakers, not roadmaps, drive v1.1.
+
+**Testing.** smoke 99/99 (+2 gated, incl. two hostile-import assertions) · a11y ×6 clean · strict green on all three decks.
+
+---
 
 ## v2.25 — release packaging: grammar v1, showcase, repo, scale (2026-07-05)
 

@@ -79,6 +79,9 @@ function tokenTable(src) {
   if (fs.existsSync('showcase.html')) {
     await audit('showcase.html', fs.readFileSync('showcase.html', 'utf8'), 'https://localhost/showcase.html');
   }
+  if (fs.existsSync('index.html')) {
+    await audit('index.html (landing)', fs.readFileSync('index.html', 'utf8'), 'https://localhost/index.html');
+  }
   tokenTable(deck);
   Object.entries(DISABLED).forEach(([r, why]) => console.log(`  (rule off: ${r} — ${why})`));
   console.log(fails === 0 ? '\nall green' : `\n${fails} problem(s)`);

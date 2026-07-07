@@ -346,6 +346,7 @@ function renderImg(it){
   var cap=it.cap?'<figcaption><b>'+DSTR.fig+' '+FIGN+'</b> — '+fmt(it.cap)+'</figcaption>':'';
   var nm=ext?'':' data-name="'+escT(it.name)+'"';
   var box='border:1px solid var(--rule);border-radius:6px;display:block';
+  src=escT(src);
   if(it.place==='fill'){
     return '<figure class="fig" style="flex:1;min-height:0;display:flex;flex-direction:column;margin:0">'
       +'<img'+nm+' src="'+src+'" alt="'+escT(it.cap||it.name)+'" style="flex:1;min-height:0;width:100%;object-fit:contain;'+box+'">'+cap+'</figure>';
@@ -573,7 +574,7 @@ function buildDeck(txt){
   /* the engine builds agenda counts as "n slides"; localise afterwards */
   var short=(m.short||m.title).slice(0,24);
   var byline=m.byline||[m.authors,m.venue].filter(Boolean).join(' · ')||short;
-  function jq(v){return String(v).replace(/\\/g,'\\\\').replace(/"/g,'\\"');}
+  function jq(v){var BS=String.fromCharCode(92);return String(v).split(BS).join(BS+BS).split('"').join(BS+'"').split('<').join(BS+'u003C');}
   function put(hay,mark,val){return hay.split(mark).join(val);}
   var out=put(SHELL,'<!--__SLIDES__-->',html.filter(Boolean).join('\n      '));
   out=put(out,'__TITLE__',escT(m.title));

@@ -1,6 +1,6 @@
 {
   "name": "lectern",
-  "version": "2.25.0",
+  "version": "1.0.0",
   "private": true,
   "license": "MIT",
   "description": "Academic slide decks as a single HTML file — plus Compose, a plain-text outline that becomes the deck.",

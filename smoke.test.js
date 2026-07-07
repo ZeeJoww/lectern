@@ -595,6 +595,33 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
         && S2.w.document.querySelector('#end svg[aria-label="QR code"]') !== null);
     }
 
+    /* ── hostile import (launch kit): untrusted outlines stay inert ── */
+    const evil2 = C.w.buildDeck([
+      'title: <img src=x onerror=alert(1)>',
+      'byline: </scr' + 'ipt><scr' + 'ipt>window.PWNED=1</scr' + 'ipt>',
+      'authors: A"; window.PWNED=1; var x="',
+      'link: javascript:alert(1)',
+      '',
+      '## Payloads',
+      '![https://x/a.png" onerror="window.PWNED=1 | cap]',
+    ].join('\n'));
+    const vch = new VirtualConsole(); const hErrs = [];
+    vch.on('jsdomError', (e) => { const m = String((e && e.message) || e);
+      if (!/Could not parse CSS|Not implemented/i.test(m)) hErrs.push(m); });
+    const HD = new JSDOM(evil2, { runScripts: 'dangerously',
+      url: 'https://localhost/h.html', pretendToBeVisual: true, virtualConsole: vch });
+    await tick(60);
+    t('hostile: script-string splices cannot close the engine script',
+      !evil2.includes('</scr' + 'ipt><scr' + 'ipt>window.PWNED')
+      && evil2.includes('\\u003C/script')
+      && hErrs.length === 0 && typeof HD.window.Lectern === 'object'
+      && HD.window.PWNED === undefined);
+    t('hostile: attribute breakouts and title HTML are neutralised',
+      !/onerror="window\.PWNED/.test(evil2)
+      && evil2.includes('src="https://x/a.png&quot; onerror=&quot;')
+      && evil2.includes('&lt;img src=x onerror')
+      && !evil2.includes('<a href="javascript:'));
+
     /* ── G9: ::fx directive ── */
     t('G9: ::fx slide lands as data-fx on the section',
       /id="a" data-fx="slide"/.test(C.w.buildDeck('title: T\n\n## A\n::fx slide\n- x')));
