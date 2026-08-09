@@ -40,7 +40,7 @@
          presenter() · math(i) · check() · state() · on(event,fn) → fn ·
          off(event,fn). Events: "slide" {i,id,el,frag,frags}
          (+ step:true for in-slide reveals); "overview" {on}.
-  Build v2.25 — change log ships alongside as LECTERN-DEVNOTES.md.
+  Build v2.27 — change log ships alongside as LECTERN-DEVNOTES.md.
   The Google Fonts <link> is optional — remove it and the deck
   falls back to Georgia / system fonts, fully offline.
   ────────────────────────────────────────────────────────────────────
@@ -671,7 +671,8 @@ function go(i,fromHash){
   emit('slide',{i:i,id:s.id,el:s,frag:frag[i],frags:fragSteps[i].length});
 }
 function idx(){
-  var id=decodeURIComponent(location.hash.slice(1));
+  var id='';
+  try{id=decodeURIComponent(location.hash.slice(1));}catch(e){/* malformed hash (e.g. `#%`) — fall through to the first slide */}
   for(var k=0;k<N;k++)if(slides[k].id===id)return k;
   return 0;
 }
@@ -1125,3 +1126,4 @@ go(idx());
 </script>
 </body>
 </html>
+{"path": "starter.html"}m'recontent' '
