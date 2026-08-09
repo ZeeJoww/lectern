@@ -42,6 +42,8 @@ exist. Ids are slugs of the titles (CJK kept), deduplicated.
 | `- ` | bullet (two leading spaces nest one level) |
 | `+ ` | bullet revealed on `→` (a *fragment*) |
 | `++ ` | fragment that dims once passed |
+
+A `- ` bullet placed *after* a fragment is never shown before it: it joins the step of the fragments that precede it (revealed together with them), so reading order on screen always matches the outline. A `- ` bullet before the first fragment of the slide stays always visible.
 | `> ` | speaker note (press `N`; feeds `?handout` printing) |
 | `![name \| caption]` | figure — `name` is a pasted asset or an `https://` URL |
 | `![name \| caption \| fill]` | figure stretches to fill its column |
