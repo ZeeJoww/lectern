@@ -47,6 +47,12 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     && d.querySelector('#cntCur').textContent === '01'
     && d.querySelector('#cntTot').textContent === '15');
 
+  /* ── malformed deep link: a bad hash must not kill the engine ── */
+  const bad = boot('https://localhost/lectern.html#%');
+  t('malformed hash (#%) still boots on #title',
+    bad.scriptErrors.length === 0
+    && bad.d.querySelector('.slide.is-current').id === 'title');
+
   /* ── F0 hooks ── */
   const seen = [];
   const h0 = w.Lectern.on('slide', (e) => seen.push(e));
@@ -343,13 +349,13 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     (src.match(/<script[^>]*>[\s\S]*?<\/script>/g) || []).forEach((b) => { mk = mk.replace(b, ''); });
     t('no \\uXXXX escapes in the UI markup; real characters shown',
       !/\\u[0-9a-fA-F]{4}/.test(mk)
-      && C.w.document.querySelector('h1').textContent.includes('\u00b7')
-      && C.w.document.querySelector('#cheat').textContent.includes('\u2192'));
+      && C.w.document.querySelector('h1').textContent.includes('·')
+      && C.w.document.querySelector('#cheat').textContent.includes('→'));
 
     /* v2.3 — bilingual UI */
     C.w.setLang('zh');
     t('setLang(zh) localises chrome and swaps the untouched sample',
-      C.w.document.querySelector('#dl').textContent === '\u4e0b\u8f7d\u5e7b\u706f\u7247'
+      C.w.document.querySelector('#dl').textContent === '下载幻灯片'
       && C.w.document.documentElement.lang === 'zh-CN'
       && C.w.document.querySelector('#outline').value.includes('lang: zh'));
     const zhSample = C.w.document.querySelector('#outline').value;
@@ -361,13 +367,13 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
       url: 'https://localhost/zh.html', pretendToBeVisual: true, virtualConsole: vcz });
     await tick(60);
     const zAg = ZD.window.document.querySelectorAll('#agenda .agenda a');
-    t('lang:zh deck: \u8bae\u7a0b, \u95ee\u7b54, zh-CN, CJK slugs, \u9875 counts',
+    t('lang:zh deck: 议程, 问答, zh-CN, CJK slugs, 页 counts',
       zErrs.length === 0
       && zhDeck.includes('<html lang="zh-CN">')
-      && ZD.window.document.querySelector('#agenda h2').textContent === '\u8bae\u7a0b'
-      && ZD.window.document.querySelector('#end h2').textContent.includes('\u95ee\u7b54')
-      && !!ZD.window.document.getElementById('\u4e00\u4e2a-html-\u6587\u4ef6')
-      && /\u9875/.test(zAg[0].textContent));
+      && ZD.window.document.querySelector('#agenda h2').textContent === '议程'
+      && ZD.window.document.querySelector('#end h2').textContent.includes('问答')
+      && !!ZD.window.document.getElementById('一个-html-文件')
+      && /页/.test(zAg[0].textContent));
     C.w.setLang('en');
 
     /* v2.3 — pictures */
@@ -377,7 +383,7 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     t('pasted picture renders as a captioned figure; missing asset warns',
       pDeck.includes('data-name="pic-1"') && pDeck.includes(px)
       && /<figcaption><b>Figure 1<\/b> — A tiny dot<\/figcaption>/.test(pDeck)
-      && /missing image: nope|\u7f3a\u5c11\u56fe\u7247/.test(pDeck));
+      && /missing image: nope|缺少图片/.test(pDeck));
     const rec = C.w.extractAssets(pDeck);
     t('assets round-trip from the downloaded deck', rec['pic-1'] === px
       && Object.keys(rec).length === 1);
@@ -401,6 +407,30 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     t('G2: ::compact renders h-compact and unknown directives are ignored',
       /class="slide h-compact" id="a"/.test(C.w.buildDeck('title: T\n\n## A\n::compact\n::future x\n- x'))
       && !/class="slide h-compact"/.test(C.w.buildDeck('title: T\n\n## A\n- x')));
+
+    /* ── v2.28: a static bullet after + joins its step ── */
+    const fb = C.w.buildDeck('title: T\n\n## S\n- always\n+ line A\n- line B\n+ line C\n- line D');
+    t('v2.28: a static bullet after + shares its step; before the first + stays static',
+      fb.includes('<li>always</li>')
+      && fb.includes('<li class="frag" data-frag="1">line A</li><li class="frag" data-frag="1">line B</li>')
+      && fb.includes('<li class="frag" data-frag="2">line C</li><li class="frag" data-frag="2">line D</li>'));
+    const fn2 = C.w.buildDeck('title: T\n\n## N\n- P\n  + child a\n  - child b\n- Q');
+    t('v2.28: nested statics join their + sibling; later items join the max preceding step',
+      fn2.includes('<li>P<ul><li class="frag" data-frag="1">child a</li><li class="frag" data-frag="1">child b</li></ul></li><li class="frag" data-frag="1">Q</li>'));
+    const fbDeck = html.replace(/(<div class="slides" id="slides">)[\s\S]*?(<\/div><!-- \/slides -->)/,
+      (m, a, b) => a + fb + b);
+    const FB = boot('https://localhost/lectern.html#title', fbDeck);
+    await tick(60);
+    FB.w.Lectern.next();
+    const flis = FB.d.querySelectorAll('.slide')[1].querySelectorAll('li');
+    const hiddenAtEntry = [1, 2, 3, 4].every((k) => !flis[k].classList.contains('is-revealed'));
+    FB.w.Lectern.next();
+    t('v2.28: forward entry hides the trailing static; one arrow reveals it with its +',
+      FB.d.querySelector('.slide.is-current') === FB.d.querySelectorAll('.slide')[1]
+      && !flis[0].classList.contains('frag')
+      && hiddenAtEntry
+      && flis[1].classList.contains('is-revealed') && flis[2].classList.contains('is-revealed')
+      && !flis[3].classList.contains('is-revealed') && !flis[4].classList.contains('is-revealed'));
     C.w.document.querySelector('#outline').value = sTxt;
     C.w.fixSlide('why-sharing-slides-is-hard', 'compact');
     let v = C.w.document.querySelector('#outline').value;
@@ -574,8 +604,8 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     const g1 = C.w.buildDeck('title: T\n\n## A\n$$E = mc^2$$\n++ a dimming step\n+ a plain step');
     t('v1: $$…$$ is a numbered display equation; ++ is a dim step',
       g1.includes('<div class="math math--eq">E = mc^2</div>')
-      && g1.includes('class="frag frag--dim">a dimming step')
-      && g1.includes('class="frag">a plain step'));
+      && g1.includes('class="frag frag--dim" data-frag="1">a dimming step')
+      && g1.includes('class="frag" data-frag="2">a plain step'));
     t('v1: outlines embed versioned; legacy unversioned still imports',
       g1.includes('lectern-outline:v1:')
       && C.w.extractOutline(g1) === 'title: T\n\n## A\n$$E = mc^2$$\n++ a dimming step\n+ a plain step'
