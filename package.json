@@ -11,7 +11,8 @@
     "strict": "node render-proof.js lectern.html --strict && node render-proof.js starter.html --strict && node render-proof.js showcase.html --strict",
     "statics": "python3 statics.py",
     "probe": "node scale-probe.js",
-    "build:compose": "python3 build-compose.py"
+    "build:compose": "python3 build-compose.py",
+    "check:compose": "python3 build-compose.py && git diff --exit-code compose.html"
   },
   "devDependencies": {
     "axe-core": "^4.10.0",
