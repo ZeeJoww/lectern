@@ -456,11 +456,20 @@ function archiveAll(){
 /* ── deck assembly ────────────────────────────────────────────── */
 function seq(body,st){
   var out=[],buf=[];
+  st.k=st.k||0; /* slide-wide fragment step counter (shared across lists and column cells) */
   function flush(){
     if(!buf.length)return;
+    /* step numbering (v2.28): every +/++ opens a new step; a static - item
+       inherits the current step, so nothing is ever visible before the
+       items that precede it. 0 = before the first + = stays static. */
+    buf.forEach(function(it){
+      if(it.frag){st.k++;it._k=st.k;}
+      else it._k=st.k;
+    });
     var h='<ul>',open=false;
     buf.forEach(function(it){
-      var li='<li'+(it.frag?' class="frag'+(it.dim?' frag--dim':'')+'"':'')+'>'+fmt(it.x)+'</li>';
+      var cls=it.frag?('frag'+(it.dim?' frag--dim':'')):(it._k>0?'frag':'');
+      var li='<li'+(cls?' class="'+cls+'" data-frag="'+it._k+'"':'')+'>'+fmt(it.x)+'</li>';
       if(it.d===1){
         if(!open){h=h.replace(/<\/li>$/,'');h+='<ul>';open=true;}
         h+=li;
