@@ -50,6 +50,7 @@ Engine symbols you will hook into: `DECK` (config), `slides` (array), `N`, `cur`
 | Key | Now | Reserved by roadmap |
 |---|---|---|
 | ← → ↑ ↓ Space PgUp PgDn | navigate | F1 makes →/↓/Space fragment-aware; PgUp/PgDn stay slide-level |
+| wheel / trackpad scroll | navigate (v2.29) | fragment-aware like →/←; accumulates to a 90px threshold with a 520ms lockout; pinch-zoom (ctrl), overview, horizontal gestures and inner scroll regions are exempt |
 | Home / End | first / last | — |
 | O / Esc | overview / close | Esc gains: close search → close overview (in that order) |
 | F | fullscreen | — |

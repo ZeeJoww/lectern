@@ -120,6 +120,75 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 25));
     && st.n === '06' && st.tot === 15 && st.frag === 2 && st.frags === 3
     && st.sections.length === 3 && st.sections[0].id === 'foundations');
 
+  /* ── v2.29: wheel navigation ── */
+  const wheel = (dy, opts) => {
+    opts = opts || {};
+    const ev = new w.WheelEvent('wheel', {
+      deltaY: dy, deltaX: opts.dx || 0, deltaMode: opts.mode || 0,
+      ctrlKey: !!opts.ctrl, bubbles: true, cancelable: true,
+    });
+    (opts.on || w).dispatchEvent(ev);
+    return ev;
+  };
+  await goId('title');
+  const w1 = wheel(120);
+  t('v2.29: one wheel detent advances a slide, default prevented',
+    w1.defaultPrevented && cur().id === 'agenda');
+  const w2 = wheel(-120);
+  t('v2.29: a second flick inside the lockout is swallowed (still prevented)',
+    w2.defaultPrevented && cur().id === 'agenda');
+  await tick(560);
+  wheel(-120);
+  t('v2.29: wheel up navigates back once the lockout expires', cur().id === 'title');
+  await tick(560);
+  wheel(3, { mode: 1 });
+  t('v2.29: line-mode deltas (Firefox) are normalised to pixels', cur().id === 'agenda');
+  const w3 = wheel(120, { ctrl: true });
+  t('v2.29: ctrl+wheel (pinch-zoom) is never hijacked',
+    !w3.defaultPrevented && cur().id === 'agenda');
+  const w4 = wheel(10, { dx: 200 });
+  t('v2.29: horizontal-dominant gestures are ignored',
+    !w4.defaultPrevented && cur().id === 'agenda');
+  const sc = d.createElement('div');
+  sc.style.cssText = 'overflow-y:auto;height:100px';
+  let sTop = 0;
+  Object.defineProperty(sc, 'scrollHeight', { value: 600 });
+  Object.defineProperty(sc, 'clientHeight', { value: 100 });
+  Object.defineProperty(sc, 'scrollTop', { get: () => sTop });
+  cur().appendChild(sc);
+  const w5 = wheel(60, { on: sc });
+  t('v2.29: an inner scrollable region keeps wheel-down for itself',
+    !w5.defaultPrevented && cur().id === 'agenda');
+  await tick(560);
+  const w6 = wheel(-120, { on: sc });
+  t('v2.29: at the region\'s top edge, a wheel-up detent reverts to deck navigation',
+    w6.defaultPrevented && cur().id === 'title');
+  sc.remove();
+  await goId('foundations'); await tick(560);
+  for (let i = 0; i < 4; i++) { wheel(30); await tick(20); }
+  t('v2.29: small trackpad deltas accumulate into exactly one navigation',
+    cur().id === 'tokens');
+  await goId('layouts'); await tick(560);
+  w.Lectern.next(); // forward entry into #writing, steps hidden
+  wheel(120);
+  t('v2.29: wheel reveals one fragment step per gesture',
+    cur().id === 'writing'
+    && d.querySelectorAll('#writing .frag.is-revealed').length === 1);
+  await tick(560); wheel(120); await tick(560); wheel(120); await tick(560); wheel(120);
+  t('v2.29: once steps are exhausted the wheel advances the slide', cur().id === 'blocks');
+  w.Lectern.overview(true);
+  const w7 = wheel(120);
+  t('v2.29: overview leaves the wheel to native grid scrolling',
+    !w7.defaultPrevented && cur().id === 'blocks');
+  w.Lectern.overview(false);
+  await goId('agenda');
+  key('b');
+  await tick(560);
+  wheel(120);
+  t('v2.29: a wheel nav lifts the blackout and still navigates',
+    !d.body.classList.contains('blackout-on') && cur().id === 'foundations');
+  await goId('title'); await tick(560);
+
   /* ── F3 math ── */
   const m = d.querySelector('#blocks .math');
   t('without KaTeX the TeX chip is untouched',

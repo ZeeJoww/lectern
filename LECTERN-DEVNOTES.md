@@ -2,9 +2,47 @@
 
 Living log for `lectern.html`. **Newest entry first.** Every change lands with an entry using the template at the bottom — decisions with their *why*, testing evidence, and handoff pointers. Companions: `LECTERN-SPEC.md` (contracts — read §1–§6 before coding), `smoke.test.js` (automated checks; extend it with every feature).
 
-Status ledger: **v1.0.0** (internal v2.26) · launch kit shipped: landing page, CONTRIBUTING, release notes, hostile-import audit (2 injection vectors fixed) · smoke 99/99 (+2 gated) · a11y ×6 · strict ×3 · repo tags v1.0.0.
+Status ledger: **v1.0.0** (internal v2.29) · malformed-hash boot fix + CI compose-sync guard + frag-bundling fix + wheel navigation · smoke 116/116 (+2 gated) · a11y ×6 · strict ×3 · repo tags v1.0.0.
 
 Roadmap 3 issued 2026-07-05 → `LECTERN-ROADMAP-3.md`. **All ten items shipped: H0–H9 (v2.15–v2.24).**
+
+## v2.29 — wheel / trackpad scroll navigation (2026-08-10)
+
+**Request: navigate by mouse wheel.** One new listener on `window` (`{passive:false}`, so `preventDefault` stays legal), calling the same `next()`/`prev()` the arrow keys use — fragment stepping, the blackout lift, the announcer and presenter sync all come for free. Shipped in both decks (`lectern.html`, `starter.html`); Compose decks inherit it through the carved shell. Build v2.27 → v2.29.
+
+**The gesture problem: one flick must equal one step.** A mouse detent arrives as a single ±100–120px event, but a trackpad flick is dozens of small `deltaY`s followed by a momentum tail, and a naive handler skips three slides per flick. The handler accumulates `deltaY` (normalised first: `deltaMode` lines ×33, pages ×720) and navigates at |Σ| ≥ 90px; after each nav a 520ms lockout swallows the momentum tail; 260ms of silence or a direction flip resets the accumulator, so separate gestures never bleed into one another.
+
+**Four exemptions, all decided before `preventDefault` so native behaviour survives.** (1) `ctrl+wheel` is the trackpad *pinch-zoom* gesture — never hijacked. (2) Overview leaves the wheel alone: `.deck.is-overview` is `overflow:auto` and the grid scrolls natively. (3) Horizontal-dominant deltas are trackpad pans — ignored. (4) An inner scrollable region (`overflow-y:auto/scroll` that can still scroll in the gesture's direction — `pre.code`, the find-results list) keeps the wheel; only at its edge does the deck take over. Detection walks `e.target`'s ancestors reading live scroll geometry, so it needs no per-widget registry.
+
+**Decisions.** (1) *Fragment-aware, never slide-jumping.* Wheel maps to →/←, not PgDn — steps are content; skipping them by input device would be arbitrary. (2) *Threshold 90px, just under the 100–120px detent:* one detent = one nav, trackpads accumulate. (3) *Blackout lifts on a completed wheel nav, not on the first sub-threshold twitch* — a keypress is always deliberate, a grazing touch of the wheel is not. (4) *No wheel handling in the presenter window* — its panes scroll natively and the opener owns navigation. (5) *No new public API* — gestures are input, not contract (SPEC §5 row added; README, quick-start comment, demo cheat sheet and MANUAL-QA updated in step).
+
+**Testing.** smoke 116/116 (+2 gated) — 13 new v2.29 assertions: detent nav, lockout swallow, post-lockout reversal, line-mode normalisation, pinch-zoom + horizontal exemptions, inner-region keep + edge-revert, trackpad accumulation, per-gesture step reveal, exhaustion→advance, overview native scroll, blackout lift-and-navigate · a11y ×6 clean · strict ×3 green (structural mode locally — sandbox lacks the STIX/Inter/JetBrains fonts; CI runs full metrics) · statics 5/5.
+
+---
+
+## v2.28 — fragment bundling: a static bullet after + joins its step (2026-08-09)
+
+**The bug: reading order lied on the first frame.** A `- line B` placed after a `+ line A` compiled to a plain `<li>` sitting directly under a `frag` one. The engine only hides what it knows is a fragment, so the first frame showed *B* — the later line, lower on screen — while *A* above it was still invisible; the first arrow then revealed A above the already-visible B. A deck is a reading-order contract: nothing later may be visible before something earlier. Reported against a real talk, reproduced in three lines of outline.
+
+**The fix: slide-wide step numbering in the builder, explicit keys in the markup.** `seq()` now threads `st.k`, a fragment-step counter shared across every list and both column cells of a slide (the same `st` object that already carries `sawP` through `cell()`). Each `+`/`++` opens a new step (`st.k++`); a static `-` item inherits the *current* step — so a trailing static is revealed together with the fragments it follows, while statics before the first `+` (step 0) stay plain, always-visible `<li>`s. Every stepped item — fragment or bundled static — carries an explicit `data-frag="k"`, which also makes Compose output and the demo deck's hand-authored protocol the same shape.
+
+**Decisions.** (1) *Join the preceding step — never the following, never a new one.* The alternatives either keep the lie (static visible early) or punish the author (static delayed past its position on screen). (2) *Emit explicit keys from the builder; touch zero engine code.* The engine already groups by `data-frag` and falls back to implicit `1000+j` keys, so old decks and hand-authored HTML behave exactly as before — append-only, per SPEC. (3) *Nesting inherits by construction.* The counter is assigned flat over the buffered items before the nesting pass runs, so `+ child a` / `- child b` under one parent share a step, and a later top-level item joins the max step so far (pinned by the second smoke assertion below).
+
+**Testing.** smoke 103/103 (+2 gated) — three new v2.28 assertions: two at builder level (flat and nested bundling) and one at boot level (forward entry hides the trailing static; one arrow reveals it together with its `+`) · a11y ×6 clean · strict ×3 green.
+
+---
+
+## v2.27 — malformed-hash boot fix + CI compose-sync (2026-08-09)
+
+**Crash on a malformed hash.** `idx()` ran `decodeURIComponent(location.hash.slice(1))` unguarded; a hash like `#%` throws `URIError` before `go()` ever marks a slide current — a blank, dead deck from one bad character in the URL. The class of bug a single `try` eliminates: decode inside `try`, fall through to the first slide on failure. Shipped in both decks (`lectern.html`, `starter.html`) with a smoke regression booting `#%` and asserting zero script errors with `#title` current. Build v2.25 → v2.27.
+
+**compose.html is a build artifact — CI now treats it like one.** The Compose page is generated by `build-compose.py` (deterministic, stdlib-only) yet committed, and at ~174 KB with a ~108 KB single-line base64 shell it is the file most likely to be pushed stale or mangled by hand. New design in `ci.yml`: on pushes to main a `compose-sync` job regenerates the file and bot-commits it when it drifted (job-level `permissions: contents: write`; GITHUB_TOKEN pushes never retrigger workflows, so no loop); on PRs the old step stays as a pure guard — regenerate, then `git diff --exit-code`. `package.json` gains `check:compose` for the same check locally.
+
+**Decisions.** (1) *Fix only demonstrated crashes.* The static WebKit audit surfaced several real-but-unverified compatibility candidates (`@page size` in px, `inset`, flex `gap`, `aspect-ratio`, `:focus-visible`, no fullscreen prefix); without a Safari run they stay on the MANUAL-QA matrix rather than becoming blind patches. (2) *No package-lock.* Two dev-only deps (`jsdom`, `axe-core`) and zero runtime deps; floating within semver in CI is a feature (breakage = signal), the lockfile churn is not. (3) *Bot commits need explicit power* — job-level `contents: write` plus repo Settings → Actions → Workflow permissions not locked to read-only; recorded here because the failure mode is silent. (4) *Heal on main, guard on PRs.* A guard on both would red every deck push that forgets the regen; healing main keeps the artifact honest with zero author discipline, while the PR guard keeps contributed trees consistent.
+
+**Testing.** smoke 100/100 (+2 gated, incl. the malformed-hash boot) · a11y ×6 clean · strict ×3 green · compose regen verified idempotent (double-run hash-stable).
+
+---
 
 ## v1.0.0 / v2.26 — launch kit + security hardening (2026-07-06)
 

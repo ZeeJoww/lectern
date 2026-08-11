@@ -34,7 +34,7 @@ The lead line the room reads first.
 
 | Key | | Key | |
 |---|---|---|---|
-| `←` `→` `Space` | navigate (reveals steps first) | `P` | presenter window (timer · notes · next) |
+| `←` `→` `Space` wheel | navigate (reveals steps first) | `P` | presenter window (timer · notes · next) |
 | `PgUp` `PgDn` | whole slides | `B` | blackout |
 | `Home` `End` | first / last | `/` | search slides |
 | `O` | overview grid | `G` | section jump menu |

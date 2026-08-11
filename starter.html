@@ -29,7 +29,7 @@
        opens the same list as a jump menu mid-talk.
    10. Handout: open deck.html?handout and print — every slide is
        followed by a typeset page of its speaker notes.
-  Keys:  ← → Space navigate (fragments first) · PgUp PgDn slides
+  Keys:  ← → Space · wheel navigate (fragments first) · PgUp PgDn slides
          Home End first/last · O overview · F fullscreen · N notes
          P presenter window · B blackout · / search · G sections
          L laser · I ink (Shift = red) · C clear ink · T theme
@@ -40,7 +40,7 @@
          presenter() · math(i) · check() · state() · on(event,fn) → fn ·
          off(event,fn). Events: "slide" {i,id,el,frag,frags}
          (+ step:true for in-slide reveals); "overview" {on}.
-  Build v2.27 — change log ships alongside as LECTERN-DEVNOTES.md.
+  Build v2.29 — change log ships alongside as LECTERN-DEVNOTES.md.
   The Google Fonts <link> is optional — remove it and the deck
   falls back to Georgia / system fonts, fully offline.
   ────────────────────────────────────────────────────────────────────
@@ -1117,6 +1117,39 @@ window.addEventListener('pointerup',function(e){
   var dx=e.clientX-tx,dy=e.clientY-ty;tx=null;ty=null;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){if(dx<0){next();}else{prev();}}
 });
+
+/* wheel / trackpad scroll — same nav as →/←, steps first (v2.29) */
+var wAcc=0,wLast=0,wLock=0;
+function wheelScrollable(el,dy){
+  while(el&&el!==document.body&&el!==document.documentElement){
+    if(el.scrollHeight>el.clientHeight+1){
+      var oy=window.getComputedStyle(el).overflowY;
+      if((oy==='auto'||oy==='scroll')
+        &&((dy>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)
+          ||(dy<0&&el.scrollTop>0)))return true;
+    }
+    el=el.parentNode;
+  }
+  return false;
+}
+window.addEventListener('wheel',function(e){
+  if(e.ctrlKey)return;                          /* trackpad pinch-zoom */
+  if(ovOn)return;                               /* the overview grid scrolls natively */
+  var dy=e.deltaY;
+  if(Math.abs(e.deltaX)>Math.abs(dy))return;    /* horizontal gesture */
+  if(wheelScrollable(e.target,dy))return;       /* code blocks, result lists */
+  e.preventDefault();
+  if(e.deltaMode===1)dy*=33;else if(e.deltaMode===2)dy*=720; /* lines/pages → px */
+  var now=Date.now();
+  if(now<wLock)return;                          /* momentum tail after a nav */
+  if(now-wLast>260||dy*wAcc<0)wAcc=0;           /* new gesture / direction flip */
+  wLast=now;wAcc+=dy;
+  if(Math.abs(wAcc)>=90){
+    var fwd=wAcc>0;wAcc=0;wLock=now+520;
+    if(document.body.classList.contains('blackout-on'))document.body.classList.remove('blackout-on');
+    if(fwd)next();else prev();
+  }
+},{passive:false});
 
 /* tiny public api */
 window.Lectern={go:function(n){go(n-1);},next:next,prev:prev,overview:overview,check:measure,on:on,off:off,presenter:openPresenter,math:math,state:state,_pv:pvData,_report:report};

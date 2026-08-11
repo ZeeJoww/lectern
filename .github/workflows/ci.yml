@@ -22,13 +22,48 @@ jobs:
           fc-cache -f
       - run: pip install --quiet html5lib weasyprint
       - run: npm install
+      - name: Compose in sync with the deck (PRs)
+        # main self-heals via the compose-sync job below; on PRs we only
+        # guard — any diff means a deck change landed without re-running
+        # the generator.
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 build-compose.py
+          git diff --exit-code compose.html || {
+            echo "::error::compose.html is stale — run \`python3 build-compose.py\` and commit the result"
+            exit 1
+          }
       - run: npm run statics
       - run: npm run gated
       - run: npm run a11y
       - run: npm run strict
+  compose-sync:
+    # The deck and its generated compose.html drift apart easily (the file
+    # is 170KB+ of base64); on main we regenerate and commit instead of
+    # failing. GITHUB_TOKEN commits do not retrigger this workflow, so
+    # there is no push loop.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions: { contents: write }
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Regenerate compose.html and commit if it changed
+        run: |
+          python3 build-compose.py
+          if ! git diff --quiet compose.html; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add compose.html
+            git commit -m "chore: regenerate compose.html after deck change"
+            git push
+          else
+            echo "compose.html already in sync"
+          fi
   pages:
     if: github.ref == 'refs/heads/main'
-    needs: test
+    needs: [test, compose-sync]
     permissions: { pages: write, id-token: write }
     environment: { name: github-pages }
     runs-on: ubuntu-latest

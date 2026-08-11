@@ -10,6 +10,7 @@ Everything else is covered by the ladder: smoke → statics → render-proof →
 - [ ] **Print eyeball** — Ctrl+P normal and `?handout`: runheads + folios everywhere; appendix pages read `A1 / N`; no feature chrome.
 - [ ] **Themes** — T through paper/slate/sepia at a glance; a `theme: slate` deck opens dark on a fresh profile.
 - [ ] **Touch** — swipe changes slides on a phone; pinch not hijacked.
+- [ ] **Wheel / trackpad** — mouse detents step exactly one nav each, a fast flick does not skip slides; two-finger scroll accumulates into steps; pinch-zoom (ctrl+wheel) not hijacked; over an overflowing code block the block scrolls, at its top edge wheel-up navigates back; overview grid scrolls natively; wheel lifts a blackout and navigates.
 - [ ] **QR** — `link:` on the end slide decodes with a phone camera from the projector distance you'd actually use.
 - [ ] **Offline math** — download with *Embed math* checked, go offline (devtools), reload: formulas render; no console 404s.
 - [ ] **Compose preview keys** — click the preview, present with the full key map inside the srcdoc frame.
